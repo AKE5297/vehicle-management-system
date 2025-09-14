@@ -1,140 +1,215 @@
 # 车辆管理系统
-一个功能完善的车辆管理系统，支持车辆信息管理、进出场记录、维修记录和发票管理等功能。
 
-## 功能特点
-- 🔑 用户认证与权限管理
-- 🚗 车辆信息管理（添加、编辑、删除、查看）
-- 📷 照片上传与管理（车辆照片、进出场照片、维修照片、发票照片）
-- ⚙️ 维修工单管理
-- 💰 发票管理
-- 📊 数据统计与导出
-- 🌙 深色/浅色主题切换
-- 📱 响应式设计，支持移动端访问
+## 项目简介
+这是一个基于React + TypeScript的车辆管理系统，用于管理车辆信息、进出场记录、维修记录和发票信息等。系统支持照片上传和管理，帮助用户更好地跟踪和记录车辆状态。
 
 ## 技术栈
-- **前端**: React 18 + TypeScript + Tailwind CSS
-- **后端**: Node.js + Express + MongoDB
-- **状态管理**: Context API
-- **路由**: React Router
-- **UI组件**: 自定义组件 + Font Awesome 图标
-- **构建工具**: Vite
+- 前端：React 18+、TypeScript、Tailwind CSS
+- 后端：Node.js、Express、MongoDB
+- 其他：React Router、recharts、sonner
 
-## 安装指南
-
-### 前提条件
-- Node.js 18+
-- npm/yarn/pnpm
-- MongoDB
-
-### 前端安装
-1. 克隆仓库
-```bash
-git clone https://github.com/your-username/vehicle-management-system.git
-cd vehicle-management-system
+## 项目结构
+```
+├── .gitignore
+├── .npmrc
+├── README.md
+├── index.html
+├── package.json
+├── pnpm-lock.yaml
+├── postcss.config.js
+├── server.js
+├── src
+│   ├── App.tsx
+│   ├── components
+│   │   ├── Empty.tsx
+│   │   ├── ProtectedRoute.tsx
+│   │   ├── layouts
+│   │   │   └── MainLayout.tsx
+│   │   └── ui
+│   │       ├── Button.tsx
+│   │       └── ImageUploader.tsx
+│   ├── contexts
+│   │   ├── ThemeContext.tsx
+│   │   └── authContext.ts
+│   ├── hooks
+│   │   └── useTheme.ts
+│   ├── index.css
+│   ├── invoices
+│   │   └── InvoiceForm.tsx
+│   ├── lib
+│   │   └── utils.ts
+│   ├── main.tsx
+│   ├── maintenance
+│   │   └── MaintenanceForm.tsx
+│   ├── pages
+│   │   ├── Home.tsx
+│   │   ├── Login.tsx
+│   │   ├── data-management
+│   │   │   └── DataManagement.tsx
+│   │   ├── invoices
+│   │   │   ├── InvoiceDetail.tsx
+│   │   │   ├── InvoiceForm.tsx
+│   │   │   └── InvoiceList.tsx
+│   │   ├── maintenance
+│   │   │   ├── MaintenanceDetail.tsx
+│   │   │   ├── MaintenanceForm.tsx
+│   │   │   └── MaintenanceList.tsx
+│   │   ├── system
+│   │   │   ├── SystemSettings.tsx
+│   │   │   ├── UserForm.tsx
+│   │   │   └── UserManagement.tsx
+│   │   └── vehicles
+│   │       ├── VehicleDetail.tsx
+│   │       ├── VehicleForm.tsx
+│   │       └── VehicleList.tsx
+│   ├── routes.tsx
+│   ├── services
+│   │   ├── mockService.ts
+│   │   └── photoService.ts
+│   ├── types
+│   │   └── index.ts
+│   └── vite-env.d.ts
+├── tailwind.config.js
+├── tsconfig.json
+└── vite.config.ts
 ```
 
-2. 安装依赖
+## 安装和运行步骤
+
+### 步骤1：安装依赖
 ```bash
+# 使用pnpm（推荐）
 pnpm install
+
+# 或使用npm
+npm install
+
+# 或使用yarn
+yarn install
 ```
 
-3. 启动开发服务器
-```bash
-pnpm dev
-```
-
-### 后端安装
-1. 确保MongoDB已启动
-2. 修改环境变量配置
-   - 复制 `.env.example` 到 `.env`
-   - 修改 `.env` 中的配置参数
-
-3. 启动后端服务器
-```bash
-pnpm dev:server
-```
-
-## 照片存储管理
-系统实现了完整的照片文件存储管理功能，按照不同类型将照片存储在不同的目录中：
-
-### 存储结构
-1. **主目录**: `src/uploads/` - 所有照片的根目录
-2. **子目录**: 根据照片类型分为不同文件夹
-   - 车辆照片: `uploads/vehicle_photos/`
-   - 进场照片: `uploads/entry_photos/`
-   - 离场照片: `uploads/exit_photos/`  
-   - 维修照片: `uploads/maintenance_photos/`
-   - 发票照片: `uploads/invoice_photos/`
-   - 配件照片: `uploads/part_photos/`
-   - 备注照片: `uploads/note_photos/`
-
-### 文件命名格式
-照片文件按照时间加车牌的格式命名：`时间戳_车牌号_车辆ID_目录类型.扩展名`
-- 时间戳格式: YYYY-MM-DDTHH-mm-ss
-- 例如: `2025-09-14T20-54-56_京A12345_1_vehicle_photos.jpg`
-
-## 使用指南
-
-### 1. 用户登录
-系统默认提供两个用户账户：
-- 管理员账户: `admin` / `admin123`
-- 普通用户账户: `user1` / `user123`
-
-### 2. 添加新车辆
-- 点击"添加新车辆"按钮
-- 填写车辆基本信息（车牌号、品牌、型号等）
-- 上传车辆照片（支持多张）
-- 上传进场照片（带时间水印）
-- 保存车辆信息
-
-### 3. 管理维修工单
-- 导航到"维修记录"页面
-- 点击"创建维修单"
-- 填写维修信息、配件清单和费用
-- 上传维修过程照片
-
-### 4. 管理发票
-- 导航到"发票管理"页面
-- 点击"添加新发票"
-- 填写发票信息和项目明细
-- 上传发票照片
-
-## 真实后端服务配置
-系统支持切换使用模拟数据或真实后端服务：
-
-1. 创建 `.env` 文件，添加以下配置：
+### 步骤2：创建.env文件
+在项目根目录创建.env文件，并添加以下配置：
 ```env
-# 使用真实后端服务
-VITE_USE_REAL_API=true
+# 服务器配置
+PORT=5000
 
-# 后端API地址
-VITE_API_BASE_URL=http://localhost:5000/api
-
-# MongoDB连接地址
+# 数据库配置
 MONGODB_URI=mongodb://localhost:27017/vehicle-management
 
-# JWT密钥
+# JWT配置
 JWT_SECRET=your-secret-key
 
-# 上传目录配置
+# 文件上传配置
 UPLOAD_DIR=uploads
+
+# 前端API配置
+VITE_API_BASE_URL=http://localhost:5000/api
+VITE_USE_REAL_API=true
 ```
 
-2. 启动后端服务
+### 步骤3：创建照片上传目录
+项目需要手动创建照片存储目录，因为这些目录不会自动生成：
 ```bash
+# 在项目根目录执行以下命令
+mkdir -p uploads/vehicle_photos
+mkdir -p uploads/entry_photos
+mkdir -p uploads/exit_photos
+mkdir -p uploads/maintenance_photos
+mkdir -p uploads/invoice_photos
+mkdir -p uploads/part_photos
+mkdir -p uploads/note_photos
+```
+
+### 步骤4：运行项目
+```bash
+# 同时运行前端和后端
+pnpm dev
+
+# 或分别运行
+# 前端
+pnpm dev:client
+
+# 后端
 pnpm dev:server
 ```
 
-3. 启动前端服务
-```bash
-pnpm dev:client
-```
+### 步骤5：访问系统
+打开浏览器，访问以下地址：
+- 前端：http://localhost:3000
+- 后端API：http://localhost:5000/api
 
-## 数据导出
-系统支持将车辆、维修和发票数据导出为多种格式（Excel、CSV、JSON），可通过"数据管理"页面操作。
+### 步骤6：登录系统
+使用默认管理员账户登录：
+- 用户名：admin
+- 密码：admin123
 
-## 系统日志
-系统自动记录关键操作日志，包括用户登录、数据创建、修改和删除等操作。
+## 照片存储机制说明
 
-## License
-MIT
+### 照片目录结构
+系统使用以下目录结构存储不同类型的照片：
+- `uploads/vehicle_photos` - 车辆照片
+- `uploads/entry_photos` - 进场照片
+- `uploads/exit_photos` - 离场照片
+- `uploads/maintenance_photos` - 维修照片
+- `uploads/invoice_photos` - 发票照片
+- `uploads/part_photos` - 配件照片
+- `uploads/note_photos` - 备注照片
+
+### 照片命名规则
+照片文件名格式为：`时间戳_车牌号_车辆ID_目录类型.扩展名`
+- 时间戳：格式为YYYY-MM-DDTHH-mm-ss
+- 车牌号：去掉空格的车牌号
+- 车辆ID：系统中的车辆唯一标识
+- 目录类型：对应上述的目录名称
+- 扩展名：原始文件的扩展名
+
+### 照片上传流程
+1. 用户通过界面上传照片
+2. 系统在`photoService.ts`中处理照片，生成唯一文件名
+3. 照片通过服务器API上传到服务器
+4. 服务器保存照片到对应目录，并返回访问URL
+5. URL存储在数据库中供后续访问
+
+## 功能模块
+
+### 1. 车辆管理
+- 添加、编辑、删除车辆信息
+- 记录车辆进出场时间和状态
+- 上传和管理车辆照片
+
+### 2. 维修管理
+- 创建和管理维修工单
+- 记录更换配件和工时费用
+- 上传维修过程照片
+
+### 3. 发票管理
+- 创建和管理发票
+- 支持OCR识别（模拟功能）
+- 上传发票照片
+
+### 4. 用户管理
+- 管理员和普通用户角色
+- 权限控制
+- 用户账户管理
+
+## 常见问题解决
+
+### 问题：照片上传后显示不正常
+**解决方法**：
+1. 确保已正确创建所有照片目录
+2. 检查照片文件是否成功上传到服务器
+3. 确认数据库中存储的照片URL是否正确
+
+### 问题：无法访问uploads文件夹
+**解决方法**：
+1. 确认目录权限设置正确，服务器进程有读写权限
+2. 检查.env文件中的UPLOAD_DIR配置是否正确
+3. 重启服务器和前端应用
+
+## 注意事项
+1. 首次运行前必须创建照片上传目录（步骤3）
+2. 确保MongoDB服务已启动
+3. 生产环境中请修改JWT_SECRET为安全的密钥
+4. 系统支持深色/浅色主题切换
+5. 默认情况下，照片上传功能会使用模拟服务，请确保VITE_USE_REAL_API设置正确

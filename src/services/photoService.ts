@@ -13,8 +13,8 @@ class PhotoService {
     NOTE_PHOTOS: 'note_photos'
   };
   
-  // 主目录
-  private readonly MAIN_DIRECTORY = 'src/uploads';
+   // 主目录 - 项目根目录下的uploads
+  private readonly MAIN_DIRECTORY = 'uploads';
 
   // 保存照片到指定目录，并返回访问URL
   async savePhoto(file: File | string, directory: string, additionalInfo?: {

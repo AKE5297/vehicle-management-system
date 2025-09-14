@@ -18,16 +18,13 @@ const VehicleForm = () => {
   const [submitting, setSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('basic'); // 'basic', 'photos', 'service'
   
-  // 统一的照片保存路径管理函数
-  const savePhotoToDirectory = (url: string, directory: string): string => {
-    // 在实际项目中，这里应该将照片保存到特定目录并返回新的URL
-    // 这里我们模拟这个过程，并确保URL格式一致
-    const timestamp = Date.now();
-    const extension = url.split('.').pop() || 'jpg';
-    const fileName = `${directory}_${timestamp}.${extension}`;
-    
-    // 保持原有的图片URL，但添加目录信息（实际项目中应该上传到指定目录）
-    return `${url}&directory=${directory}&filename=${fileName}`;
+   // 使用照片服务保存照片到指定目录
+  const savePhotoToDirectory = async (file: string, directory: string): Promise<string> => {
+    // 调用photoService保存照片，并传入车牌号等附加信息
+    return photoService.savePhoto(file, directory, {
+      licensePlate: formData.licensePlate,
+      vehicleId: formData.id || undefined
+    });
   };
   
   // Form data state

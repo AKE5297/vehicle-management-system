@@ -481,6 +481,14 @@ app.post('/api/users', authMiddleware, async (req, res) => {
       // 构建完整的目录路径：主目录/子目录/文件名
       const fullPath = `${process.env.UPLOAD_DIR || 'uploads'}/${directory}/${uniqueFilename}`;
       
+      // 创建目录（如果不存在）
+      const fs = require('fs');
+      const directoryPath = `${process.env.UPLOAD_DIR || 'uploads'}/${directory}`;
+      if (!fs.existsSync(directoryPath)) {
+        fs.mkdirSync(directoryPath, { recursive: true });
+        console.log(`创建目录: ${directoryPath}`);
+      }
+      
       // 在实际应用中，这里应该将base64数据转换为文件并保存到指定目录
       // 这里我们只返回一个模拟的URL，但包含真实的路径信息
       const photoUrl = `https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=${encodeURIComponent(type || 'vehicle')}&directory=${encodeURIComponent(fullPath)}`;

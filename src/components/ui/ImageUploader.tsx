@@ -139,10 +139,10 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     }
   };
 
-  const handleRemoveImage = (index: number) => {
+  const handleRemoveImage = async (index: number) => {
     const updatedImages = images.filter((_, i) => i !== index);
     setImages(updatedImages);
-    onUpload(updatedImages);
+    await onUpload(updatedImages);
     toast.success('照片已移除');
   };
   

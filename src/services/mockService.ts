@@ -5,6 +5,9 @@ const USE_REAL_API = import.meta.env.VITE_USE_REAL_API !== 'false';
 // 基础API URL
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
 
+// 上传目录配置
+const UPLOAD_DIR = import.meta.env.VITE_UPLOAD_DIR || 'uploads';
+
 // 导入类型定义
 import type { SystemLog } from '../types';
 
