@@ -1,9 +1,3 @@
-import { v4 as uuidv4 } from 'uuid';
-import { 
-  Vehicle, MaintenanceRecord, Invoice, User, 
-  InsuranceRecord, Part, Note, SystemLog 
-} from '../types';
-
 // Mock data service for the vehicle management system
 class MockService {
   // Data keys for localStorage
@@ -17,7 +11,7 @@ class MockService {
   };
 
   // Mock users data
-  private users: User[] = [
+  private users = [
     {
       id: '1',
       username: 'admin',
@@ -43,7 +37,7 @@ class MockService {
   ];
 
   // Mock vehicles data
-  private vehicles: Vehicle[] = [
+  private vehicles = [
     {
       id: '1',
       licensePlate: '京A12345',
@@ -102,7 +96,7 @@ class MockService {
   ];
 
   // Mock maintenance records
-  private maintenanceRecords: MaintenanceRecord[] = [
+  private maintenanceRecords = [
     {
       id: '1',
       vehicleId: '1',
@@ -146,7 +140,7 @@ class MockService {
   ];
 
   // Mock insurance records
-  private insuranceRecords: InsuranceRecord[] = [
+  private insuranceRecords = [
     {
       id: '1',
       vehicleId: '2',
@@ -166,7 +160,7 @@ class MockService {
   ];
 
   // Mock invoices
-  private invoices: Invoice[] = [
+  private invoices = [
     {
       id: '1',
       invoiceNumber: 'FP-20250906-001',
@@ -189,7 +183,7 @@ class MockService {
   ];
 
   // Mock system logs
-  private systemLogs: SystemLog[] = [
+  private systemLogs = [
     {
       id: '1',
       userId: '1',
@@ -223,7 +217,7 @@ class MockService {
   ];
 
   // Authentication methods
-  login(username: string, password: string): Promise<User | null> {
+  login(username: string, password: string): Promise<any> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const user = this.users.find(
@@ -257,7 +251,7 @@ class MockService {
   }
 
   // Vehicle methods
-  getVehicles(): Promise<Vehicle[]> {
+  getVehicles(): Promise<any[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([...this.vehicles]);
@@ -265,7 +259,7 @@ class MockService {
     });
   }
 
-  getVehicleById(id: string): Promise<Vehicle | null> {
+  getVehicleById(id: string): Promise<any | null> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const vehicle = this.vehicles.find(v => v.id === id);
@@ -274,12 +268,14 @@ class MockService {
     });
   }
 
-  createVehicle(vehicleData: Omit<Vehicle, 'id' | 'createdAt' | 'updatedAt'>): Promise<Vehicle> {
+  createVehicle(vehicleData: any): Promise<any> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        const newVehicle: Vehicle = {
+        // Generate a simple ID without uuid
+        const newId = (this.vehicles.length + 1).toString();
+        const newVehicle = {
           ...vehicleData,
-          id: uuidv4(),
+          id: newId,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
@@ -292,13 +288,12 @@ class MockService {
     });
   }
 
-   updateVehicle(id: string, vehicleData: Partial<Vehicle>): Promise<Vehicle | null> {
+  updateVehicle(id: string, vehicleData: any): Promise<any | null> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const index = this.vehicles.findIndex(v => v.id === id);
         if (index !== -1) {
-          this.vehicles[index] = {
-            ...this.vehicles[index],
+          this.vehicles[index] = {...this.vehicles[index],
             ...vehicleData,
             updatedAt: new Date().toISOString()
           };
@@ -329,7 +324,7 @@ class MockService {
   }
 
   // Maintenance methods
-  getMaintenanceRecords(): Promise<MaintenanceRecord[]> {
+  getMaintenanceRecords(): Promise<any[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([...this.maintenanceRecords]);
@@ -337,7 +332,7 @@ class MockService {
     });
   }
 
-  getMaintenanceRecordById(id: string): Promise<MaintenanceRecord | null> {
+  getMaintenanceRecordById(id: string): Promise<any | null> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const record = this.maintenanceRecords.find(m => m.id === id);
@@ -346,12 +341,14 @@ class MockService {
     });
   }
 
-  createMaintenanceRecord(recordData: Omit<MaintenanceRecord, 'id' | 'createdAt' | 'updatedAt'>): Promise<MaintenanceRecord> {
+  createMaintenanceRecord(recordData: any): Promise<any> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        const newRecord: MaintenanceRecord = {
+        // Generate a simple ID without uuid
+        const newId = (this.maintenanceRecords.length + 1).toString();
+        const newRecord = {
           ...recordData,
-          id: uuidv4(),
+          id: newId,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
@@ -364,7 +361,7 @@ class MockService {
     });
   }
 
-  updateMaintenanceRecord(id: string, recordData: Partial<MaintenanceRecord>): Promise<MaintenanceRecord | null> {
+  updateMaintenanceRecord(id: string, recordData: any): Promise<any | null> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const index = this.maintenanceRecords.findIndex(m => m.id === id);
@@ -401,7 +398,7 @@ class MockService {
   }
 
   // Invoice methods
-  getInvoices(): Promise<Invoice[]> {
+  getInvoices(): Promise<any[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
         resolve([...this.invoices]);
@@ -409,7 +406,7 @@ class MockService {
     });
   }
 
-  getInvoiceById(id: string): Promise<Invoice | null> {
+  getInvoiceById(id: string): Promise<any | null> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const invoice = this.invoices.find(i => i.id === id);
@@ -418,12 +415,14 @@ class MockService {
     });
   }
 
-  createInvoice(invoiceData: Omit<Invoice, 'id' | 'createdAt' | 'updatedAt'>): Promise<Invoice> {
+  createInvoice(invoiceData: any): Promise<any> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        const newInvoice: Invoice = {
+        // Generate a simple ID without uuid
+        const newId = (this.invoices.length + 1).toString();
+        const newInvoice = {
           ...invoiceData,
-          id: uuidv4(),
+          id: newId,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
         };
@@ -436,7 +435,7 @@ class MockService {
     });
   }
 
-  updateInvoice(id: string, invoiceData: Partial<Invoice>): Promise<Invoice | null> {
+  updateInvoice(id: string, invoiceData: any): Promise<any | null> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const index = this.invoices.findIndex(i => i.id === id);
@@ -472,7 +471,7 @@ class MockService {
     });
   }
 
-  getInvoicesByVehicleId(vehicleId: string): Promise<Invoice[]> {
+  getInvoicesByVehicleId(vehicleId: string): Promise<any[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const vehicleInvoices = this.invoices.filter(i => i.vehicleId === vehicleId);
@@ -482,7 +481,7 @@ class MockService {
   }
 
   // System log methods
-  getSystemLogs(): Promise<SystemLog[]> {
+  getSystemLogs(): Promise<any[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
         // Return logs in reverse chronological order
@@ -495,8 +494,10 @@ class MockService {
 
   // Helper method to log system actions
   private logAction(userId: string, action: string, entityType: string, entityId: string, details: Record<string, any>): void {
-    const newLog: SystemLog = {
-      id: uuidv4(),
+    // Generate a simple ID without uuid
+    const newLogId = (this.systemLogs.length + 1).toString();
+    const newLog = {
+      id: newLogId,
       userId,
       action,
       entityType,
@@ -514,8 +515,8 @@ class MockService {
     }
   }
 
-   // User management methods
-  getUsers(): Promise<User[]> {
+  // User management methods
+  getUsers(): Promise<any[]> {
     return new Promise((resolve) => {
       setTimeout(() => {
         // Return users without passwords
@@ -529,13 +530,15 @@ class MockService {
     });
   }
 
-   // User management methods
-  createUser(userData: Omit<User, 'id' | 'createdAt' | 'updatedAt' | 'lastLogin'>): Promise<User> {
+  // User management methods
+  createUser(userData: any): Promise<any> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        const newUser: User = {
+        // Generate a simple ID without uuid
+        const newId = (this.users.length + 1).toString();
+        const newUser = {
           ...userData,
-          id: uuidv4(),
+          id: newId,
           lastLogin: undefined,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString()
@@ -551,7 +554,7 @@ class MockService {
     });
   }
 
-  updateUser(id: string, userData: Partial<User>): Promise<User | null> {
+  updateUser(id: string, userData: any): Promise<any | null> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const index = this.users.findIndex(u => u.id === id);
@@ -597,7 +600,7 @@ class MockService {
   }
 
   // Data export simulation
-  exportData(format: 'excel' | 'csv' | 'json', filter?: any): Promise<string> {
+  exportData(format: string, filter?: any): Promise<string> {
     return new Promise((resolve) => {
       setTimeout(() => {
         // In real app this would generate actual file content

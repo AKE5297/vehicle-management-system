@@ -1,82 +1,88 @@
-# 车辆管理系统 - Vehicle Management System
+# 车辆管理系统
 
-一个现代化的车辆管理系统，提供完整的车辆信息管理、维修记录跟踪、发票管理和数据导出功能，帮助您高效管理车辆相关业务。
+一个现代化的车辆管理系统，提供全面的车辆信息管理、维修记录跟踪、发票管理和数据导出功能。
 
-## 🚀 功能特性
-
-### 核心功能
-- **车辆管理**：完整的车辆信息CRUD操作，包括车牌号、品牌型号、服务类型等
-- **维修记录**：详细的维修工单管理，包括配件信息、工时费用和维修照片
-- **发票管理**：发票记录与管理，支持照片上传和OCR识别
-- **数据导出**：支持多种格式（Excel、CSV、JSON）的数据导出功能
-- **用户管理**：多级用户权限控制，包括管理员和普通用户角色
-
-### 用户体验特性
-- **响应式设计**：适配桌面端和移动端，提供流畅的跨设备体验
-- **深色模式**：支持明暗主题切换，减少长时间使用的视觉疲劳
-- **即时通知**：操作反馈和状态提示，提高用户操作感知
-- **数据可视化**：直观的图表展示，帮助快速掌握业务数据
-- **本地存储**：支持数据本地持久化，确保数据不丢失
-
-## 🛠 技术栈
+## 🚀 技术栈
 
 - **前端框架**: React 18+
 - **编程语言**: TypeScript
 - **构建工具**: Vite
 - **样式框架**: Tailwind CSS
-- **路由管理**: React Router DOM
+- **路由**: React Router DOM
+- **图标库**: Font Awesome
 - **数据可视化**: Recharts
-- **通知组件**: Sonner
-- **唯一ID生成**: UUID
-- **类型安全**: Zod (表单验证)
+- **状态管理**: React Context API
+- **UI组件库**: 自定义组件
+- **表单验证**: Zod
+- **动画效果**: Framer Motion
+- **通知提示**: Sonner
 
-## 📋 环境要求
+## ✨ 功能特点
 
+### 车辆管理
+- 车辆信息的添加、编辑、查看和删除
+- 车辆进出场状态管理
+- 车辆照片上传和管理
+- 车辆服务类型标记（维修/保险）
+
+### 维修记录管理
+- 维修工单的创建和跟踪
+- 维修配件管理
+- 维修照片记录
+- 工时和费用计算
+
+### 发票管理
+- 发票信息录入和管理
+- 发票照片上传
+- 发票OCR识别（模拟）
+- 发票状态跟踪
+
+### 数据管理
+- 多格式数据导出（Excel、CSV、JSON）
+- 按日期范围筛选数据
+- 导出历史记录
+
+### 用户系统
+- 管理员和普通用户权限分离
+- 用户账户管理
+- 细粒度权限控制
+
+### 系统特性
+- 深色/浅色主题切换
+- 响应式设计，支持移动端和桌面端
+- 完整的表单验证
+- 美观的UI设计和流畅的动画效果
+- 模拟数据支持离线使用
+
+## 🛠️ 安装和运行
+
+### 前提条件
 - Node.js 18+
-- npm/pnpm/yarn
+- npm、pnpm或yarn包管理器
 
-## ⚙️ 安装与运行
+### 安装步骤
 
-### 1. 克隆项目
-
+1. 克隆仓库
 ```bash
 git clone https://github.com/your-username/vehicle-management-system.git
 cd vehicle-management-system
 ```
 
-### 2. 安装依赖
-
-使用pnpm（推荐）:
+2. 安装依赖
 ```bash
 pnpm install
 ```
 
-或使用npm:
-```bash
-npm install
-```
-
-或使用yarn:
-```bash
-yarn install
-```
-
-### 3. 开发模式运行
-
+3. 启动开发服务器
 ```bash
 pnpm dev
-# 或 npm run dev
-# 或 yarn dev
 ```
 
-项目将在 http://localhost:3000 启动开发服务器
+应用将在 http://localhost:3000 启动
 
-### 4. 构建生产版本
-
+### 构建生产版本
 ```bash
 pnpm build
-# 或 npm run build
-# 或 yarn build
 ```
 
 构建后的文件将位于 `dist` 目录
@@ -84,124 +90,120 @@ pnpm build
 ## 🚢 部署指南
 
 ### 本地部署
-
-1. 完成构建后，使用任何静态文件服务器托管 `dist` 目录：
+可以使用任何静态文件服务器部署构建后的应用：
 
 ```bash
-# 使用内置的http-server (如果没有安装: npm install -g http-server)
-http-server dist
-
-# 或使用Python的内置服务器
-cd dist
-python -m http.server 8080
+# 使用 serve 工具
+npx serve -s dist
 ```
 
 ### NAS部署
-
-1. 确保NAS已安装Docker或支持静态网站托管
-2. 将构建后的`dist`目录复制到NAS的Web服务器目录
-3. 配置Web服务器（如Nginx、Apache）指向该目录
-4. 通过NAS的IP地址或域名访问系统
+1. 构建生产版本 (`pnpm build`)
+2. 将 `dist` 目录中的所有文件复制到您的NAS上的Web服务器目录
+3. 配置NAS的Web服务器以提供静态文件访问
 
 ### 服务器部署
+1. 构建生产版本 (`pnpm build`)
+2. 将 `dist` 目录中的内容部署到您的Web服务器（如Nginx、Apache等）
+3. 配置Web服务器以正确处理单页应用路由
 
-1. 将构建后的`dist`目录上传到服务器
-2. 配置Nginx作为Web服务器:
-
+Nginx示例配置：
 ```nginx
 server {
     listen 80;
     server_name your-domain.com;
-    
+
+    root /path/to/vehicle-management-system/dist;
+    index index.html;
+
     location / {
-        root /path/to/vehicle-management-system/dist;
-        index index.html;
         try_files $uri $uri/ /index.html;
     }
 }
 ```
 
-3. 重启Nginx服务:
-```bash
-sudo service nginx restart
-```
+### GitHub Pages + Cloudflare Pages 部署
 
-### Cloudflare Pages部署
+1. **GitHub 仓库设置**
+   - 将代码推送到您的GitHub仓库
 
-1. 在GitHub上创建项目仓库并推送代码
-2. 登录Cloudflare，导航到"Pages"
-3. 点击"Create a project"并连接您的GitHub仓库
-4. 配置构建设置:
-   - Framework preset: Vite
-   - Build command: `pnpm install --no-frozen-lockfile && pnpm build`
-   - Build output directory: `dist`
-5. 点击"Save and Deploy"开始部署过程
-6. 部署完成后，系统将提供一个Cloudflare Pages子域名访问您的应用
+2. **Cloudflare Pages 部署**
+   - 登录Cloudflare并导航到"Pages"
+   - 点击"连接Git"并选择您的GitHub仓库
+   - 在构建设置中：
+     - 框架预设：Vite
+     - 构建命令：`pnpm install --no-frozen-lockfile && pnpm run build`
+     - 构建输出目录：`dist`
+   - 点击"保存并部署"
 
-> **注意**: 由于package.json和pnpm-lock.yaml可能存在版本不匹配问题，部署命令中特别添加了`--no-frozen-lockfile`参数以确保构建成功。
+> 注意：由于依赖版本可能存在差异，Cloudflare Pages构建时使用了`--no-frozen-lockfile`参数以避免锁文件版本冲突
 
-## 🔑 登录凭证
+## 📋 使用说明
 
-系统提供了两个默认账户用于演示：
+### 默认账户
+系统包含两个默认账户用于演示：
+- 管理员账户：用户名 `admin`，密码 `admin123`
+- 普通用户账户：用户名 `user1`，密码 `user123`
 
-- **管理员账户**
-  - 用户名: `admin`
-  - 密码: `admin123`
-  
-- **普通用户账户**
-  - 用户名: `user1`
-  - 密码: `user123`
+### 主要功能使用
 
-## 📁 项目结构
+#### 车辆管理
+1. 从侧边栏导航到"车辆管理"
+2. 点击"添加新车辆"按钮创建新车辆记录
+3. 填写车辆信息，上传照片
+4. 可随时编辑或删除现有车辆记录
 
+#### 维修记录
+1. 从侧边栏导航到"维修记录"
+2. 点击"创建维修单"开始记录新的维修任务
+3. 添加维修配件和工时信息
+4. 上传维修过程照片
+
+#### 发票管理
+1. 从侧边栏导航到"发票管理"
+2. 点击"添加新发票"录入发票信息
+3. 可选择手动录入或使用OCR识别功能
+4. 上传发票照片并记录项目明细
+
+#### 数据导出
+1. 从侧边栏导航到"数据管理"
+2. 选择要导出的数据类型和文件格式
+3. 设置日期范围筛选条件
+4. 点击"开始导出"下载数据文件
+
+## 📚 开发指南
+
+### 项目结构
 ```
 src/
-├── components/         # 可复用组件
-│   ├── layouts/        # 布局组件
-│   └── ui/             # UI组件
-├── contexts/           # React上下文
-├── hooks/              # 自定义hooks
-├── lib/                # 工具函数
-├── pages/              # 页面组件
-│   ├── vehicles/       # 车辆管理页面
-│   ├── invoices/       # 发票管理页面
-│   ├── maintenance/    # 维修记录页面
-│   └── system/         # 系统设置页面
-├── routes.tsx          # 路由配置
-├── services/           # 服务层（API调用、Mock数据）
-├── types/              # TypeScript类型定义
-└── main.tsx            # 应用入口
+├── components/          # 通用组件
+│   ├── layouts/         # 布局组件
+│   └── ui/              # UI组件
+├── contexts/            # React Context
+├── hooks/               # 自定义hooks
+├── lib/                 # 工具函数
+├── pages/               # 页面组件
+├── services/            # 服务层（API调用、数据处理）
+├── types/               # TypeScript类型定义
+├── App.tsx              # 应用入口
+├── index.css            # 全局样式
+├── main.tsx             # 渲染入口
+└── routes.tsx           # 路由配置
 ```
 
-## 🎨 主题定制
+### 开发规范
+- 组件遵循单一职责原则
+- 使用TypeScript确保类型安全
+- 使用Tailwind CSS进行样式设计
+- 状态管理使用React Context API
+- 服务层与UI分离
 
-系统支持明暗主题切换，主题配置位于`src/contexts/ThemeContext.tsx`文件中。您可以根据需求调整颜色方案和主题行为。
+## 📝 许可证
 
-## 📊 数据持久化
+MIT License
 
-系统使用localStorage进行数据本地持久化，确保用户数据在页面刷新或浏览器重启后仍然保留。在实际生产环境中，建议集成后端API实现服务器端数据存储。
+## 📞 联系信息
 
-## 🔒 安全注意事项
-
-- 本系统为演示目的设计，实际部署时请更换默认登录凭证
-- 敏感数据（如密码）应进行加密存储
-- 生产环境中建议实现更严格的访问控制和数据验证
-
-## 🤝 贡献指南
-
-欢迎提交Issue和Pull Request来改进此项目。在提交PR之前，请确保您的代码符合项目的编码规范。
-
-## 📄 许可证
-
-本项目采用MIT许可证 - 查看LICENSE文件了解详情
-
-## 📞 联系方式
-
-如有任何问题或建议，请通过以下方式联系我们：
-
-- Email: support@example.com
-- GitHub: [your-username/vehicle-management-system](https://github.com/your-username/vehicle-management-system)
-
----
+如有任何问题或建议，请联系项目维护者。
 
 © 2025 车辆管理系统 - 版权所有
