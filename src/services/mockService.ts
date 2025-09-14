@@ -288,17 +288,30 @@ class MockService {
     });
   }
 
-  updateVehicle(id: string, vehicleData: any): Promise<any | null> {
+   updateVehicle(id: string, vehicleData: any): Promise<any | null> {
     return new Promise((resolve) => {
       setTimeout(() => {
         const index = this.vehicles.findIndex(v => v.id === id);
         if (index !== -1) {
-          this.vehicles[index] = {...this.vehicles[index],
+          // 确保所有照片数据被正确保存
+          const updatedVehicle = {
+            ...this.vehicles[index],
             ...vehicleData,
             updatedAt: new Date().toISOString()
           };
           
-          this.logAction('1', 'update', 'vehicle', id, vehicleData);
+          // 确保photos数组始终存在
+          if (!updatedVehicle.photos) {
+            updatedVehicle.photos = [];
+          }
+          
+          this.vehicles[index] = updatedVehicle;
+          
+          this.logAction('1', 'update', 'vehicle', id, {
+            licensePlate: updatedVehicle.licensePlate,
+            photosCount: updatedVehicle.photos.length
+          });
+          
           resolve({ ...this.vehicles[index] });
         } else {
           resolve(null);

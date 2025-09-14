@@ -152,16 +152,28 @@ const VehicleDetail = () => {
         <div className="p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">车辆照片</h2>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {vehicle.photos.map((photo, index) => (
-              <div key={index} className="relative rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 aspect-video">
-                <img
-                  src={photo}
-                  alt={`${vehicle.licensePlate} - 照片 ${index + 1}`}
-                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                />
-              </div>
-            ))}
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {vehicle.photos && vehicle.photos.length > 0 ? (
+                vehicle.photos.map((photo, index) => (
+                  <div key={index} className="relative rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 aspect-video">
+                    <img
+                      src={photo}
+                      alt={`${vehicle.licensePlate} - 照片 ${index + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      onError={(e) => {
+                        // 图片加载失败时显示默认图标
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=Car%20placeholder%20image&sign=046ca8763b5b7acb3a4ab7a4d8df730b";
+                      }}
+                    />
+                  </div>
+                ))
+              ) : (
+                <div className="col-span-full text-center py-8 text-gray-500 dark:text-gray-400">
+                  <i className="fa-solid fa-image text-4xl mb-2"></i>
+                  <p>暂无车辆照片</p>
+                </div>
+              )}
           </div>
         </div>
       </div>

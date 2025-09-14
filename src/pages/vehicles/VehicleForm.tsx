@@ -17,6 +17,18 @@ const VehicleForm = () => {
   const [submitting, setSubmitting] = useState(false);
   const [activeTab, setActiveTab] = useState('basic'); // 'basic', 'photos', 'service'
   
+  // 统一的照片保存路径管理函数
+  const savePhotoToDirectory = (url: string, directory: string): string => {
+    // 在实际项目中，这里应该将照片保存到特定目录并返回新的URL
+    // 这里我们模拟这个过程，并确保URL格式一致
+    const timestamp = Date.now();
+    const extension = url.split('.').pop() || 'jpg';
+    const fileName = `${directory}_${timestamp}.${extension}`;
+    
+    // 保持原有的图片URL，但添加目录信息（实际项目中应该上传到指定目录）
+    return `${url}&directory=${directory}&filename=${fileName}`;
+  };
+  
   // Form data state
   const [formData, setFormData] = useState({
     licensePlate: '',
@@ -132,20 +144,33 @@ const VehicleForm = () => {
   
   // Handle photo uploads
   const handlePhotosUpload = (urls: string[]) => {
-    setFormData(prev => ({ ...prev, photos: urls }));
+    const formattedUrls = urls.map(url => savePhotoToDirectory(url, 'vehicle_photos'));
+    setFormData(prev => ({ ...prev, photos: formattedUrls }));
   };
   
   // Handle entry photo upload
   const handleEntryPhotoUpload = (urls: string[]) => {
     if (urls.length > 0) {
-      setFormData(prev => ({ ...prev, entryPhoto: urls[0] }));
+      const formattedUrl = savePhotoToDirectory(urls[0], 'entry_photos');
+      setFormData(prev => ({ ...prev, entryPhoto: formattedUrl }));
     }
   };
   
   // Handle exit photo upload
   const handleExitPhotoUpload = (urls: string[]) => {
     if (urls.length > 0) {
-      setFormData(prev => ({ ...prev, exitPhoto: urls[0] }));
+      const formattedUrl = savePhotoToDirectory(urls[0], 'exit_photos');
+      setFormData(prev => ({ ...prev, exitPhoto: formattedUrl }));
+    }
+  };
+  
+  // Handle part photo upload
+  const handlePartPhotoUpload = (index: number, urls: string[]) => {
+    if (urls.length > 0) {
+      const newParts = [...formData.parts];
+      const formattedUrl = savePhotoToDirectory(urls[0], 'part_photos');
+      newParts[index] = { ...newParts[index], photo: formattedUrl };
+      setFormData(prev => ({ ...prev, parts: newParts }));
     }
   };
   
@@ -171,6 +196,12 @@ const VehicleForm = () => {
     
     if (formData.status === 'out' && !formData.exitTime) {
       toast.error('离场车辆必须填写离场时间');
+      return;
+    }
+    
+    // 检查照片是否已上传
+    if (formData.photos.length === 0) {
+      toast.error('请至少上传一张车辆照片');
       return;
     }
     

@@ -239,6 +239,11 @@ const MaintenanceDetail = () => {
                     src={photo}
                     alt={`维修照片 ${index + 1}`}
                     className="w-full h-48 object-cover"
+                    onError={(e) => {
+                      // 图片加载失败时显示默认图标
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=Maintenance%20placeholder%20image&sign=861e58bf3c43da635839d1762bcce6a6";
+                    }}
                   />
                 </div>
               ))}

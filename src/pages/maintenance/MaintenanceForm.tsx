@@ -101,11 +101,24 @@ const MaintenanceForm = () => {
     setFormData(prev => ({ ...prev, photos: urls }));
   };
   
+   // 统一的照片保存路径管理函数
+  const savePhotoToDirectory = (url: string, directory: string): string => {
+    // 在实际项目中，这里应该将照片保存到特定目录并返回新的URL
+    // 这里我们模拟这个过程，并确保URL格式一致
+    const timestamp = Date.now();
+    const extension = url.split('.').pop() || 'jpg';
+    const fileName = `${directory}_${timestamp}.${extension}`;
+    
+    // 保持原有的图片URL，但添加目录信息（实际项目中应该上传到指定目录）
+    return `${url}&directory=${directory}&filename=${fileName}`;
+  };
+  
   // Handle part photo upload
   const handlePartPhotoUpload = (index: number, urls: string[]) => {
     if (urls.length > 0) {
       const newParts = [...formData.parts];
-      newParts[index] = { ...newParts[index], photo: urls[0] };
+      const formattedUrl = savePhotoToDirectory(urls[0], 'part_photos');
+      newParts[index] = { ...newParts[index], photo: formattedUrl };
       setFormData(prev => ({ ...prev, parts: newParts }));
     }
   };
@@ -132,7 +145,7 @@ const MaintenanceForm = () => {
     
     setSubmitting(true);
     
-    try {
+     try {
       // Create new maintenance record
       const maintenanceData: Partial<MaintenanceRecord> = {
         ...formData,
@@ -148,9 +161,9 @@ const MaintenanceForm = () => {
         updatedAt: new Date().toISOString()
       };
       
-      // Simulate API call with mock service
+      // Call mock service to save the maintenance record
       console.log('Creating new maintenance record:', maintenanceData);
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await mockService.createMaintenanceRecord(maintenanceData);
       
       toast.success('维修记录创建成功');
       navigate('/maintenance');

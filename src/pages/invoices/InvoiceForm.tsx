@@ -138,10 +138,23 @@ const InvoiceForm = () => {
     }));
   };
   
+   // 统一的照片保存路径管理函数
+  const savePhotoToDirectory = (url: string, directory: string): string => {
+    // 在实际项目中，这里应该将照片保存到特定目录并返回新的URL
+    // 这里我们模拟这个过程，并确保URL格式一致
+    const timestamp = Date.now();
+    const extension = url.split('.').pop() || 'jpg';
+    const fileName = `${directory}_${timestamp}.${extension}`;
+    
+    // 保持原有的图片URL，但添加目录信息（实际项目中应该上传到指定目录）
+    return `${url}&directory=${directory}&filename=${fileName}`;
+  };
+  
   // Handle photo upload
   const handlePhotoUpload = (urls: string[]) => {
     if (urls.length > 0) {
-      setFormData(prev => ({ ...prev, photo: urls[0] }));
+      const formattedUrl = savePhotoToDirectory(urls[0], 'invoice_photos');
+      setFormData(prev => ({ ...prev, photo: formattedUrl }));
     }
   };
   
