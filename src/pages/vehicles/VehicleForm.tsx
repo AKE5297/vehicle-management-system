@@ -143,27 +143,74 @@ const VehicleForm = () => {
     setFormData(prev => ({ ...prev, serviceType: value }));
   };
   
-  // Handle photo uploads
-  const handlePhotosUpload = (urls: string[]) => {
-    const formattedUrls = urls.map(url => savePhotoToDirectory(url, 'vehicle_photos'));
-    setFormData(prev => ({ ...prev, photos: formattedUrls }));
-  };
+   // Handle photo uploads
+  const handlePhotosUpload = async (urls: string[]) => {
+    try {
+      // 创建目录结构（如果不存在）
+      photoService.createDirectoryStructure();
+      
+      // 使用photoService保存照片
+      const directory = photoService.getDirectory('VEHICLE_PHOTOS');
+      const formattedUrls = await Promise.all(
+        urls.map(url => photoService.savePhoto(url, directory, {
+          licensePlate: formData.licensePlate,
+          vehicleId: formData.id || undefined
+        }))
+      );
+      
+      setFormData(prev => ({ ...prev, photos: formattedUrls }));
+      toast.success(`成功上传${urls.length}张车辆照片`);
+    } catch (error) {
+      console.error('Error uploading photos:', error);
+      toast.error('照片上传失败，请重试');
+    }
+  }
   
   // Handle entry photo upload
-  const handleEntryPhotoUpload = (urls: string[]) => {
+  const handleEntryPhotoUpload = async (urls: string[]) => {
     if (urls.length > 0) {
-      const formattedUrl = savePhotoToDirectory(urls[0], 'entry_photos');
-      setFormData(prev => ({ ...prev, entryPhoto: formattedUrl }));
+      try {
+        // 创建目录结构（如果不存在）
+        photoService.createDirectoryStructure();
+        
+        // 使用photoService保存照片
+        const directory = photoService.getDirectory('ENTRY_PHOTOS');
+        const formattedUrl = await photoService.savePhoto(urls[0], directory, {
+          licensePlate: formData.licensePlate,
+          vehicleId: formData.id || undefined
+        });
+        
+        setFormData(prev => ({ ...prev, entryPhoto: formattedUrl }));
+        toast.success('进场照片上传成功');
+      } catch (error) {
+        console.error('Error uploading entry photo:', error);
+        toast.error('进场照片上传失败，请重试');
+      }
     }
-  };
+  }
   
   // Handle exit photo upload
-  const handleExitPhotoUpload = (urls: string[]) => {
+  const handleExitPhotoUpload = async (urls: string[]) => {
     if (urls.length > 0) {
-      const formattedUrl = savePhotoToDirectory(urls[0], 'exit_photos');
-      setFormData(prev => ({ ...prev, exitPhoto: formattedUrl }));
+      try {
+        // 创建目录结构（如果不存在）
+        photoService.createDirectoryStructure();
+        
+        // 使用photoService保存照片
+        const directory = photoService.getDirectory('EXIT_PHOTOS');
+        const formattedUrl = await photoService.savePhoto(urls[0], directory, {
+          licensePlate: formData.licensePlate,
+          vehicleId: formData.id || undefined
+        });
+        
+        setFormData(prev => ({ ...prev, exitPhoto: formattedUrl }));
+        toast.success('离场照片上传成功');
+      } catch (error) {
+        console.error('Error uploading exit photo:', error);
+        toast.error('离场照片上传失败，请重试');
+      }
     }
-  };
+  }
   
    // Handle service record photo upload
   const handlePartPhotoUpload = async (index: number, urls: string[]) => {

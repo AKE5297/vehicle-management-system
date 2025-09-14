@@ -131,6 +131,11 @@ const InvoiceDetail = () => {
                 src={invoice.photo}
                 alt={invoice.invoiceNumber}
                 className="max-w-full h-auto rounded-lg shadow-md"
+                onError={(e) => {
+                  // 图片加载失败时显示默认图标
+                  const target = e.target as HTMLImageElement;
+                  target.src = "https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=Invoice%20placeholder%20image&sign=ed5fd980678692d165559aa94c6afa57";
+                }}
               />
             </div>
           </div>

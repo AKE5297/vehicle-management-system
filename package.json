@@ -1,17 +1,26 @@
 {
-  "name": "project_template_react",
+  "name": "vehicle-management-system",
   "private": true,
-  "version": "0.0.1",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev:client": "vite --host --port 3000",
-    "dev": "pnpm dev:client",
+    "dev:server": "node --watch server.js",
+    "dev": "concurrently \"pnpm dev:client\" \"pnpm dev:server\"",
     "build:client": "vite build --outDir dist/static",
-    "build": "rm -rf dist && pnpm install --no-frozen-lockfile && pnpm build:client && cp package.json dist && touch dist/build.flag"
+    "build": "rm -rf dist && pnpm install --no-frozen-lockfile && pnpm build:client && cp package.json dist && touch dist/build.flag",
+    "start": "node server.js"
   },
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "clsx": "^2.1.1",
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
     "framer-motion": "^12.9.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.3.0",

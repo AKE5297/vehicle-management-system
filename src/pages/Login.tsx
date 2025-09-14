@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/authContext';
@@ -38,6 +38,11 @@ const Login = () => {
         // Store user data in localStorage
         localStorage.setItem('currentUser', JSON.stringify(user));
         
+        // If user has a token, store it separately
+        if (user.token) {
+          localStorage.setItem('authToken', user.token);
+        }
+        
         // Show success message
         toast.success('登录成功，欢迎回来！');
         
@@ -55,6 +60,24 @@ const Login = () => {
       setLoading(false);
     }
   };
+  
+  // 初始化模拟数据（仅在首次加载时）
+  useEffect(() => {
+    // 检查是否已有用户数据
+    const checkInitialization = async () => {
+      try {
+        const users = await mockService.getUsers();
+        if (users.length === 0) {
+          console.log('初始化模拟数据...');
+          // 这里可以添加初始化模拟数据的逻辑
+        }
+      } catch (error) {
+        console.error('初始化检查失败:', error);
+      }
+    };
+    
+    checkInitialization();
+  }, []);
   
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">

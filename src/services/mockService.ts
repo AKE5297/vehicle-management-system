@@ -1,16 +1,74 @@
-// Mock data service for the vehicle management system
-class MockService {
-  // Data keys for localStorage
-  private readonly STORAGE_KEYS = {
-    USERS: 'vehicle_management_users',
-    VEHICLES: 'vehicle_management_vehicles',
-    MAINTENANCE: 'vehicle_management_maintenance',
-    INVOICES: 'vehicle_management_invoices',
-    INSURANCE: 'vehicle_management_insurance',
-    SYSTEM_LOGS: 'vehicle_management_system_logs'
-  };
+// 服务层 - 支持连接真实后端或使用模拟数据
+// 默认使用真实后端服务，可通过环境变量切换到模拟数据
+const USE_REAL_API = import.meta.env.VITE_USE_REAL_API !== 'false';
 
-  // Mock users data
+// 基础API URL
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+
+// 导入类型定义
+import type { SystemLog } from '../types';
+
+class MockService {
+  // 用于真实API调用的fetch包装器
+  private async apiFetch(endpoint: string, options: any = {}): Promise<any> {
+    const url = `${API_BASE_URL}/${endpoint}`;
+    
+    // 获取存储的认证令牌
+    const authData = localStorage.getItem('currentUser');
+    const user = authData ? JSON.parse(authData) : null;
+    const token = user?.token;
+    
+    // 设置默认请求头
+    const headers = {
+      'Content-Type': 'application/json',
+      ...(token && { 'Authorization': `Bearer ${token}` }),
+      ...options.headers
+    };
+    
+    // 合并请求选项
+    const fetchOptions = {
+      ...options,
+      headers
+    };
+    
+    try {
+      const response = await fetch(url, fetchOptions);
+      
+      if (!response.ok) {
+        // 尝试从错误响应中获取详细信息
+        const errorData = await response.json().catch(() => null);
+        throw new Error(`API请求失败: ${response.statusText}${errorData?.message ? ` - ${errorData.message}` : ''}`);
+      }
+      
+      return await response.json();
+    } catch (error) {
+      console.error(`API调用错误 - ${endpoint}:`, error);
+      
+      // 如果是网络错误，尝试使用模拟数据作为后备
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        console.warn('网络连接失败，正在切换到模拟数据模式');
+        return this.apiFetch(endpoint, { ...options, useMock: true });
+      }
+      
+      throw error;
+    }
+  }
+  
+  // 系统日志存储
+  private systemLogs: SystemLog[] = [
+    {
+      id: '1',
+      userId: '1',
+      action: 'login',
+      entityType: 'user',
+      entityId: '1',
+      details: { success: true },
+      ipAddress: '127.0.0.1',
+      timestamp: '2025-09-01T10:30:00Z'
+    }
+  ];
+
+  // Mock数据（当不使用真实API时使用）
   private users = [
     {
       id: '1',
@@ -36,7 +94,6 @@ class MockService {
     }
   ];
 
-  // Mock vehicles data
   private vehicles = [
     {
       id: '1',
@@ -95,7 +152,6 @@ class MockService {
     }
   ];
 
-  // Mock maintenance records
   private maintenanceRecords = [
     {
       id: '1',
@@ -139,27 +195,6 @@ class MockService {
     }
   ];
 
-  // Mock insurance records
-  private insuranceRecords = [
-    {
-      id: '1',
-      vehicleId: '2',
-      claimNumber: 'INS-2025-0906-1234',
-      accidentDate: '2025-09-05T18:45:00Z',
-      description: '车辆停放时被剐蹭，导致右侧车门和翼子板受损',
-      damagePhotos: [
-        'https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=Car%20door%20scratch%20damage%20photo&sign=a9a9191b19a09d04b15a9d61b32520e0',
-        'https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=Car%20fender%20damage%20photo&sign=559703aba5e67f9c21cd4529e9bcc4da'
-      ],
-      status: 'pending',
-      estimatedCost: 5800.00,
-      insuranceCompany: '平安保险',
-      createdAt: '2025-09-06T09:25:00Z',
-      updatedAt: '2025-09-06T09:25:00Z'
-    }
-  ];
-
-  // Mock invoices
   private invoices = [
     {
       id: '1',
@@ -182,42 +217,23 @@ class MockService {
     }
   ];
 
-  // Mock system logs
-  private systemLogs = [
-    {
-      id: '1',
-      userId: '1',
-      action: 'login',
-      entityType: 'user',
-      entityId: '1',
-      details: { success: true },
-      ipAddress: '192.168.1.100',
-      timestamp: '2025-09-07T08:15:30Z'
-    },
-    {
-      id: '2',
-      userId: '1',
-      action: 'create',
-      entityType: 'vehicle',
-      entityId: '2',
-      details: { licensePlate: '沪B67890', brand: '宝马', model: 'X5' },
-      ipAddress: '192.168.1.100',
-      timestamp: '2025-09-06T09:10:00Z'
-    },
-    {
-      id: '3',
-      userId: '1',
-      action: 'update',
-      entityType: 'vehicle',
-      entityId: '1',
-      details: { status: 'out', exitTime: '2025-09-06T16:45:00Z' },
-      ipAddress: '192.168.1.100',
-      timestamp: '2025-09-06T16:45:00Z'
-    }
-  ];
-
   // Authentication methods
   login(username: string, password: string): Promise<any> {
+    // 如果使用真实API
+    if (USE_REAL_API && !arguments[2]?.useMock) {
+      return this.apiFetch('login', {
+        method: 'POST',
+        body: JSON.stringify({ username, password })
+      }).then(data => {
+        // 保存认证信息到本地存储
+        if (data.token) {
+          localStorage.setItem('authToken', data.token);
+        }
+        return data.user;
+      });
+    }
+    
+    // 模拟登录
     return new Promise((resolve) => {
       setTimeout(() => {
         const user = this.users.find(
@@ -226,7 +242,7 @@ class MockService {
         
         if (user) {
           // Create a copy without password for security
-          const userWithoutPassword = { ...user };
+          const userWithoutPassword = { ...user, token: 'mock-jwt-token' };
           delete userWithoutPassword.password;
           
           // Update last login time (in real app this would be saved to database)
@@ -505,27 +521,30 @@ class MockService {
     });
   }
 
-  // Helper method to log system actions
+   // Helper method to log system actions
   private logAction(userId: string, action: string, entityType: string, entityId: string, details: Record<string, any>): void {
-    // Generate a simple ID without uuid
-    const newLogId = (this.systemLogs.length + 1).toString();
-    const newLog = {
-      id: newLogId,
-      userId,
-      action,
-      entityType,
-      entityId,
-      details,
-      ipAddress: '192.168.1.100', // In real app this would be the client's IP
-      timestamp: new Date().toISOString()
-    };
-    
-    this.systemLogs.push(newLog);
-    
-    // Keep only last 1000 logs (in real app this would be handled by database)
-    if (this.systemLogs.length > 1000) {
-      this.systemLogs.shift();
+    // 真实环境中，日志应该通过API发送到服务器
+    if (USE_REAL_API) {
+      try {
+        this.apiFetch('logs', {
+          method: 'POST',
+          body: JSON.stringify({
+            userId,
+            action,
+            entityType,
+            entityId,
+            details
+          })
+        }).catch(err => console.warn('日志记录失败:', err));
+      } catch (e) {
+        // 忽略日志记录失败的错误
+        console.warn('日志记录失败:', e);
+      }
+      return;
     }
+    
+    // 模拟环境中记录日志
+    console.log(`[LOG] ${action} ${entityType} ${entityId} by ${userId}:`, details);
   }
 
   // User management methods
@@ -625,4 +644,14 @@ class MockService {
   }
 }
 
+// 创建服务实例
 export const mockService = new MockService();
+
+// 添加一个辅助函数来检查是否连接到真实API
+export const isUsingRealAPI = () => USE_REAL_API;
+
+// 导出真实API相关的配置
+export const apiConfig = {
+  baseUrl: API_BASE_URL,
+  useRealAPI: USE_REAL_API
+};

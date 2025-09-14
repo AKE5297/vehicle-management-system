@@ -1,15 +1,15 @@
 import { useState } from 'react';
 import { toast } from 'sonner';
 import { photoService } from '../../services/photoService';
-import { cn } from '../../lib/utils';
+import { cn } from '@/lib/utils';
+import { isUsingRealAPI } from '../../services/mockService';
 
 interface ImageUploaderProps {
   maxFiles?: number;
   multiple?: boolean;
   initialImages?: string[];
-  onUpload: (urls: string[]) => void;
+  onUpload: (urls: string[]) => Promise<void>;
   buttonText?: string;
-  maxSize?: number;
   helpText?: string;
   compact?: boolean;
   watermarkText?: string;
@@ -19,6 +19,8 @@ interface ImageUploaderProps {
     licensePlate?: string;
     vehicleId?: string;
   };
+  className?: string;
+  maxSize?: number;
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({
@@ -27,13 +29,14 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   initialImages = [],
   onUpload,
   buttonText = '上传照片',
-  maxSize = 500, // Default 500KB
+  maxSize = 5, // Default 5MB
   helpText = '支持JPG、PNG格式',
   compact = false,
   watermarkText,
   withDescription = false,
   directoryType = 'VEHICLE_PHOTOS',
-  additionalInfo = {}
+  additionalInfo = {},
+  className
 }) => {
   const [images, setImages] = useState<string[]>(initialImages);
   const [loading, setLoading] = useState(false);
@@ -65,8 +68,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         const file = files[i];
         
         // Validate file size
-        if (file.size > maxSize * 1024) {
-          toast.error(`文件大小不能超过${maxSize}KB`);
+        if (file.size > maxSize * 1024 * 1024) {
+          toast.error(`文件大小不能超过${maxSize}MB`);
           continue;
         }
         
@@ -76,11 +79,47 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
           continue;
         }
         
-        // Get directory for this type of photos
-        const directory = photoService.getDirectory(directoryType);
+        let url: string;
         
-        // Save photo using photo service
-        const url = await photoService.savePhoto(file, directory, additionalInfo);
+        // 如果使用真实API，则使用fetch上传文件
+        if (isUsingRealAPI()) {
+          // 读取文件为Base64
+          const base64Data = await fileToBase64(file);
+          
+          // 获取目录
+          const directory = photoService.getDirectory(directoryType);
+          
+          // 发送到服务器
+          const response = await fetch('/api/upload', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem('authToken') || ''}`
+            },
+            body: JSON.stringify({
+              directory,
+              filename: file.name,
+              type: directoryType,
+              base64Data,
+              additionalInfo
+            })
+          });
+          
+          if (!response.ok) {
+            throw new Error('文件上传失败');
+          }
+          
+          const data = await response.json();
+          url = data.url;
+        } else {
+          // 使用模拟服务上传文件
+          // Get directory for this type of photos
+          const directory = photoService.getDirectory(directoryType);
+          
+          // Save photo using photo service
+          url = await photoService.savePhoto(file, directory, additionalInfo);
+        }
+        
         newImages.push(url);
       }
       
@@ -89,10 +128,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         setImages(updatedImages);
         onUpload(updatedImages);
           toast.success(`成功上传${newImages.length}张照片`);
-          // 照片上传完成
-          if (newImages.length > 0) {
-            // 处理上传成功逻辑
-          }
       }
     } catch (error) {
       console.error('Error uploading images:', error);
@@ -110,9 +145,23 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     onUpload(updatedImages);
     toast.success('照片已移除');
   };
+  
+  // 将文件转换为Base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        // 去掉data:image/jpeg;base64,前缀
+        const base64 = (reader.result as string).split(',')[1];
+        resolve(base64);
+      };
+      reader.onerror = (error) => reject(error);
+    });
+  };
 
   return (
-    <div className={cn("space-y-3", compact && "space-y-2")}>
+    <div className={cn("space-y-3", compact && "space-y-2", className)}>
       <label htmlFor="image-upload" className={cn(
         "flex items-center justify-center w-full p-4 border-2 border-dashed rounded-lg cursor-pointer",
         "bg-gray-50 dark:bg-gray-800 border-gray-300 dark:border-gray-600",
@@ -149,8 +198,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
                 <img 
                   src={image} 
                   alt={`Uploaded image ${index + 1}`}
-                  className="w-full h-full object-cover"
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
                   onError={(e) => {
+                    // 图片加载失败时显示默认图标
                     const target = e.target as HTMLImageElement;
                     target.src = "https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=Image%20placeholder&sign=7a887c6241b734f417ff13080ca9fdcb";
                   }}
@@ -159,8 +209,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
               <button
                 type="button"
                 onClick={() => handleRemoveImage(index)}
-                className="absolute top-1 right-1 bg-white/80 dark:bg-gray-900/80 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200"
-                aria-label="Remove image"
+                className="absolute top-2 right-2 bg-white/80 dark:bg-gray-800/80 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-white dark:hover:bg-gray-800"
               >
                 <i className="fa-solid fa-trash text-red-500"></i>
               </button>
@@ -170,6 +219,6 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       )}
     </div>
   );
-};
+}
 
 export default ImageUploader;

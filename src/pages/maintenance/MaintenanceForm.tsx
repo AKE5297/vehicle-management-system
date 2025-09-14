@@ -97,7 +97,7 @@ const MaintenanceForm = () => {
     }));
   };
   
-  // Handle photo upload for maintenance process
+   // Handle photo upload for maintenance process
   const handlePhotosUpload = async (urls: string[]) => {
     try {
       // 创建目录结构（如果不存在）
@@ -106,7 +106,9 @@ const MaintenanceForm = () => {
       // 使用photoService保存照片
       const directory = photoService.getDirectory('MAINTENANCE_PHOTOS');
       const formattedUrls = await Promise.all(
-        urls.map(url => photoService.savePhoto(url, directory))
+        urls.map(url => photoService.savePhoto(url, directory, {
+          licensePlate: formData.vehicleLicensePlate
+        }))
       );
       
       setFormData(prev => ({ ...prev, photos: formattedUrls }));

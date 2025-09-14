@@ -17,6 +17,7 @@ export default function App() {
   const logout = () => {
     setIsAuthenticated(false);
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('authToken');
   };
   
   return (

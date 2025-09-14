@@ -1,5 +1,6 @@
-// 照片管理服务，统一处理照片的上传、存储和访问
+import { isUsingRealAPI } from './mockService';
 
+// 照片管理服务，统一处理照片的上传、存储和访问
 class PhotoService {
   // 不同类型照片的存储目录
   private readonly DIRECTORIES = {
@@ -13,13 +14,21 @@ class PhotoService {
   };
   
   // 主目录
-  private readonly MAIN_DIRECTORY = 'uploads';
+  private readonly MAIN_DIRECTORY = 'src/uploads';
 
   // 保存照片到指定目录，并返回访问URL
-  savePhoto(file: File | string, directory: string, additionalInfo?: {
+  async savePhoto(file: File | string, directory: string, additionalInfo?: {
     licensePlate?: string,
     vehicleId?: string
   }): Promise<string> {
+    // 如果使用真实API，应该通过fetch上传到服务器
+    if (isUsingRealAPI()) {
+      // 这个方法现在主要在ImageUploader中处理了
+      // 这里保留作为备用方法
+      throw new Error('照片上传在ImageUploader中处理');
+    }
+
+    // 使用模拟上传
     return new Promise((resolve) => {
       // 模拟图片上传过程
       setTimeout(() => {
@@ -50,13 +59,14 @@ class PhotoService {
         // 对于模拟环境，我们使用现有的图片URL，但添加完整的路径信息
         // 在实际项目中，这里应该返回实际的文件存储路径
         if (typeof file === 'string') {
-          resolve(`${file}&directory=${fullPath}`);
+          // 保留原始URL，但添加目录信息作为查询参数
+          resolve(`${file}&directory=${encodeURIComponent(fullPath)}`);
         } else {
           // 模拟文件上传后的URL
           const prompt = encodeURIComponent(`${directory} photo for ${additionalInfo?.licensePlate || 'vehicle'}`);
-          resolve(`https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=${prompt}&directory=${fullPath}`);
+          resolve(`https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=${prompt}&directory=${encodeURIComponent(fullPath)}`);
         }
-      }, 800); // 模拟网络延迟
+      }, 500); // 模拟网络延迟
     });
   }
 
@@ -102,9 +112,46 @@ class PhotoService {
     });
   }
   
-  // 获取照片存储根目录
-  getRootDirectory(): string {
-    return this.MAIN_DIRECTORY;
+  // 从URL中获取照片类型
+  getPhotoTypeFromUrl(url: string): string | null {
+    const match = url.match(/directory=([^&]+)/);
+    if (match) {
+      try {
+        const path = decodeURIComponent(match[1]);
+        // 从路径中提取目录名
+        const pathParts = path.split('/');
+        // 目录名应该是倒数第二个部分
+        return pathParts.length >= 2 ? pathParts[pathParts.length - 2] : null;
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  }
+  
+  // 生成水印文本
+  generateWatermarkText(plateNumber?: string, vehicleId?: string): string {
+    const now = new Date();
+    const timestamp = now.toLocaleString('zh-CN', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit'
+    });
+    
+    let watermark = `时间: ${timestamp}`;
+    
+    if (plateNumber) {
+      watermark += `\n车牌: ${plateNumber}`;
+    }
+    
+    if (vehicleId) {
+      watermark += `\nID: ${vehicleId}`;
+    }
+    
+    return watermark;
   }
 }
 
