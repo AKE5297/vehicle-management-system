@@ -15,6 +15,10 @@ interface ImageUploaderProps {
   watermarkText?: string;
   withDescription?: boolean;
   directoryType?: keyof typeof photoService.getDirectory;
+  additionalInfo?: {
+    licensePlate?: string;
+    vehicleId?: string;
+  };
 }
 
 const ImageUploader: React.FC<ImageUploaderProps> = ({
@@ -28,7 +32,8 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   compact = false,
   watermarkText,
   withDescription = false,
-  directoryType = 'VEHICLE_PHOTOS'
+  directoryType = 'VEHICLE_PHOTOS',
+  additionalInfo = {}
 }) => {
   const [images, setImages] = useState<string[]>(initialImages);
   const [loading, setLoading] = useState(false);
@@ -51,6 +56,9 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     setLoading(true);
 
     try {
+      // 创建目录结构（如果不存在）
+      photoService.createDirectoryStructure();
+      
       const newImages: string[] = [];
       
       for (let i = 0; i < files.length; i++) {
@@ -72,7 +80,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         const directory = photoService.getDirectory(directoryType);
         
         // Save photo using photo service
-        const url = await photoService.savePhoto(file, directory);
+        const url = await photoService.savePhoto(file, directory, additionalInfo);
         newImages.push(url);
       }
       
@@ -80,7 +88,11 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
         const updatedImages = [...images, ...newImages];
         setImages(updatedImages);
         onUpload(updatedImages);
-        toast.success(`成功上传${newImages.length}张照片`);
+          toast.success(`成功上传${newImages.length}张照片`);
+          // 照片上传完成
+          if (newImages.length > 0) {
+            // 处理上传成功逻辑
+          }
       }
     } catch (error) {
       console.error('Error uploading images:', error);

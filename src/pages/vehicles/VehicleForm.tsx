@@ -5,6 +5,7 @@ import { Vehicle } from '../../types';
 import { toast } from 'sonner';
 import ImageUploader from '../../components/ui/ImageUploader';
 import { cn } from '../../lib/utils';
+import { photoService } from '../../services/photoService';
 
 // Vehicle form component for creating and editing vehicles
 const VehicleForm = () => {
@@ -164,13 +165,27 @@ const VehicleForm = () => {
     }
   };
   
-  // Handle part photo upload
-  const handlePartPhotoUpload = (index: number, urls: string[]) => {
+   // Handle service record photo upload
+  const handlePartPhotoUpload = async (index: number, urls: string[]) => {
     if (urls.length > 0) {
-      const newParts = [...formData.parts];
-      const formattedUrl = savePhotoToDirectory(urls[0], 'part_photos');
-      newParts[index] = { ...newParts[index], photo: formattedUrl };
-      setFormData(prev => ({ ...prev, parts: newParts }));
+      try {
+        // 创建目录结构（如果不存在）
+        photoService.createDirectoryStructure();
+        
+        // 使用photoService保存照片
+        const directory = photoService.getDirectory('PART_PHOTOS');
+        const formattedUrl = await photoService.savePhoto(urls[0], directory, {
+          licensePlate: formData.licensePlate,
+          vehicleId: formData.id || undefined
+        });
+        
+        // 这里我们暂时使用一个空操作，因为服务记录的存储结构需要根据实际需求设计
+        console.log('Service record photo uploaded:', formattedUrl);
+        toast.success('服务记录照片上传成功');
+      } catch (error) {
+        console.error('Error uploading service record photo:', error);
+        toast.error('服务记录照片上传失败，请重试');
+      }
     }
   };
   
@@ -558,12 +573,16 @@ const VehicleForm = () => {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                       车辆照片 (支持多张，自动压缩至1080P)
                     </label>
-                    <ImageUploader
-                      maxFiles={5}
-                      initialImages={formData.photos}
-                      onUpload={handlePhotosUpload}
-                      buttonText="上传车辆照片"
-                    />
+                     <ImageUploader
+                       maxFiles={20}
+                       initialImages={formData.photos}
+                       onUpload={handlePhotosUpload}
+                       buttonText="上传车辆照片"
+                       additionalInfo={{
+                         licensePlate: formData.licensePlate,
+                         vehicleId: formData.id || undefined
+                       }}
+                     />
                   </div>
                   
                   {/* Entry photo with watermark */}
@@ -571,14 +590,18 @@ const VehicleForm = () => {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                       进场状态照片 (带时间水印)
                     </label>
-                    <ImageUploader
-                      maxFiles={1}
-                      multiple={false}
-                      initialImages={formData.entryPhoto ? [formData.entryPhoto] : []}
-                      onUpload={handleEntryPhotoUpload}
-                      buttonText="上传进场照片"
-                      watermarkText={`进场_${formData.licensePlate}_${new Date().toLocaleString()}`}
-                    />
+                     <ImageUploader
+                       maxFiles={1}
+                       multiple={false}
+                       initialImages={formData.entryPhoto ? [formData.entryPhoto] : []}
+                       onUpload={handleEntryPhotoUpload}
+                       buttonText="上传进场照片"
+                       watermarkText={`进场_${formData.licensePlate}_${new Date().toLocaleString()}`}
+                       additionalInfo={{
+                         licensePlate: formData.licensePlate,
+                         vehicleId: formData.id || undefined
+                       }}
+                     />
                   </div>
                   
                   {/* Exit photo with watermark (only if status is "out") */}
@@ -587,14 +610,18 @@ const VehicleForm = () => {
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                         离场状态照片 (带时间水印)
                       </label>
-                      <ImageUploader
-                        maxFiles={1}
-                        multiple={false}
-                        initialImages={formData.exitPhoto ? [formData.exitPhoto] : []}
-                        onUpload={handleExitPhotoUpload}
-                        buttonText="上传离场照片"
-                        watermarkText={`离场_${formData.licensePlate}_${new Date().toLocaleString()}`}
-                      />
+                         <ImageUploader
+                           maxFiles={1}
+                           multiple={false}
+                           initialImages={formData.exitPhoto ? [formData.exitPhoto] : []}
+                           onUpload={handleExitPhotoUpload}
+                           buttonText="上传离场照片"
+                           watermarkText={`离场_${formData.licensePlate}_${new Date().toLocaleString()}`}
+                           additionalInfo={{
+                             licensePlate: formData.licensePlate,
+                             vehicleId: formData.id || undefined
+                           }}
+                         />
                     </div>
                   )}
                 </div>
@@ -638,11 +665,31 @@ const VehicleForm = () => {
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             维修照片
                           </label>
-                          <ImageUploader
-                            maxFiles={3}
-                            buttonText="上传维修照片"
-                            helpText="上传维修过程或结果照片"
-                          />
+                             <ImageUploader
+                              maxFiles={10}
+                              buttonText="上传维修照片"
+                              helpText="上传维修过程或结果照片"
+                              onUpload={async (urls) => {
+                                if (urls.length > 0) {
+                                  try {
+                                    // 创建目录结构（如果不存在）
+                                    photoService.createDirectoryStructure();
+                                    
+                                    // 保存服务记录照片
+                                    const directory = photoService.getDirectory('MAINTENANCE_PHOTOS');
+                                    const formattedUrl = await photoService.savePhoto(urls[0], directory, {
+                                      licensePlate: formData.licensePlate,
+                                      vehicleId: formData.id || undefined
+                                    });
+                                    toast.success('服务记录照片上传成功');
+                                    console.log('Service photo saved:', formattedUrl);
+                                  } catch (error) {
+                                    console.error('Error saving service photo:', error);
+                                    toast.error('服务记录照片保存失败，请重试');
+                                  }
+                                }
+                              }}
+                            />
                         </div>
                       </div>
                     </div>
@@ -681,11 +728,31 @@ const VehicleForm = () => {
                           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                             事故照片
                           </label>
-                          <ImageUploader
-                            maxFiles={5}
-                            buttonText="上传事故照片"
-                            helpText="上传事故现场和车辆损失照片"
-                          />
+                             <ImageUploader
+                              maxFiles={10}
+                              buttonText="上传事故照片"
+                              helpText="上传事故现场和车辆损失照片"
+                              onUpload={async (urls) => {
+                                if (urls.length > 0) {
+                                  try {
+                                    // 创建目录结构（如果不存在）
+                                    photoService.createDirectoryStructure();
+                                    
+                                    // 保存事故照片
+                                    const directory = photoService.getDirectory('NOTE_PHOTOS');
+                                    const formattedUrl = await photoService.savePhoto(urls[0], directory, {
+                                      licensePlate: formData.licensePlate,
+                                      vehicleId: formData.id || undefined
+                                    });
+                                    toast.success('事故照片上传成功');
+                                    console.log('Accident photo saved:', formattedUrl);
+                                  } catch (error) {
+                                    console.error('Error saving accident photo:', error);
+                                    toast.error('事故照片保存失败，请重试');
+                                  }
+                                }
+                              }}
+                            />
                         </div>
                       </div>
                     </div>

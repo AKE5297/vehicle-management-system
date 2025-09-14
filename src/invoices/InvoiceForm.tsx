@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import { mockService } from '../../services/mockService';
-import { Invoice } from '../../types';
-import ImageUploader from '../../components/ui/ImageUploader';
-import { cn } from '../../lib/utils';
-import { photoService } from '../../services/photoService';
+import { mockService } from '../services/mockService';
+import { Invoice } from '../types';
+import ImageUploader from '../components/ui/ImageUploader';
+import { cn } from '../lib/utils';
+import { photoService } from '../services/photoService';
 
 // Invoice form component for creating and editing invoices
 const InvoiceForm = () => {
@@ -575,44 +575,6 @@ const InvoiceForm = () => {
                          }
                        }}
                       helpText="支持JPG、PNG格式，建议拍摄清晰的发票照片"
-                      onUpload={(urls) => {
-                        if (urls.length > 0) {
-                          // Simulate OCR processing
-                          setSubmitting(true);
-                          setTimeout(() => {
-                            // Mock OCR results
-                            const mockResults = {
-                              invoiceNumber: `FP-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-                              date: new Date().toISOString(),
-                              amount: (Math.random() * 1000 + 100).toFixed(2),
-                              vehicleLicensePlate: '京A' + Math.floor(Math.random() * 100000).toString().padStart(5, '0'),
-                              items: [
-                                { id: '1', description: '维修费', quantity: 1, unitPrice: (Math.random() * 500 + 100).toFixed(2), totalPrice: '' },
-                                { id: '2', description: '零件费', quantity: 1, unitPrice: (Math.random() * 300 + 50).toFixed(2), totalPrice: '' }
-                              ]
-                            };
-                            
-                            // Calculate total prices
-                            mockResults.items.forEach(item => {
-                              item.totalPrice = (parseFloat(item.quantity.toString()) * parseFloat(item.unitPrice)).toFixed(2);
-                            });
-                            
-                            // Update form data with OCR results
-                            setFormData(prev => ({
-                              ...prev,
-                              ...mockResults,
-                              photo: urls[0]
-                            }));
-                            
-                            // Switch back to invoice tab
-                            setActiveTab('invoice');
-                            setSubmitting(false);
-                            
-                            // Show success message
-                            toast.success('OCR识别成功，已自动填充表单');
-                          }, 2000);
-                        }
-                      }}
                     />
                   </div>
                   

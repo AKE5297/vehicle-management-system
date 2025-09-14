@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
-import { mockService } from '../../services/mockService';
-import { MaintenanceRecord, Part } from '../../types';
-import ImageUploader from '../../components/ui/ImageUploader';
-import { cn } from '../../lib/utils';
-import { photoService } from '../../services/photoService';
+import { mockService } from '../services/mockService';
+import { MaintenanceRecord, Part } from '../types';
+import ImageUploader from '../components/ui/ImageUploader';
+import { cn } from '../lib/utils';
+import { photoService } from '../services/photoService';
 
 // Maintenance form component for creating new maintenance records
 const MaintenanceForm = () => {
@@ -122,7 +122,7 @@ const MaintenanceForm = () => {
     // 调用photoService保存照片
     return photoService.savePhoto(file, directory);
   };
-  
+   
    // Handle part photo upload
   const handlePartPhotoUpload = async (index: number, urls: string[]) => {
     if (urls.length > 0) {
@@ -167,7 +167,7 @@ const MaintenanceForm = () => {
     
     setSubmitting(true);
     
-     try {
+    try {
       // Create new maintenance record
       const maintenanceData: Partial<MaintenanceRecord> = {
         ...formData,
@@ -463,18 +463,15 @@ const MaintenanceForm = () => {
                     </ul>
                   </div>
                   
-                   <ImageUploader
-                     maxFiles={20}
-                     initialImages={formData.photos}
-                     onUpload={handlePhotosUpload}
-                     buttonText="上传维修照片"
-                     maxSize={1024}
-                     helpText="支持JPG、PNG格式，记录维修过程的关键步骤"
-                     withDescription={true}
-                     additionalInfo={{
-                       licensePlate: formData.vehicleLicensePlate
-                     }}
-                   />
+                  <ImageUploader
+                    maxFiles={20}
+                    initialImages={formData.photos}
+                    onUpload={handlePhotosUpload}
+                    buttonText="上传维修照片"
+                    maxSize={1024}
+                    helpText="支持JPG、PNG格式，记录维修过程的关键步骤"
+                    withDescription={true}
+                  />
                   
                   {formData.photos.length > 0 && (
                     <div className="mt-6">
@@ -608,8 +605,7 @@ const MaintenanceForm = () => {
             )}
           </div>
           
-          {/* Form actions */}
-          <div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t dark:border-gray-800 flex justify-end space-x-3 mt-6">
+          {/* Form actions */}<div className="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t dark:border-gray-800 flex justify-end space-x-3 mt-6">
             <button
               type="button"
               onClick={() => navigate('/maintenance')}
@@ -636,6 +632,6 @@ const MaintenanceForm = () => {
       </div>
     </div>
   );
-};
+}
 
 export default MaintenanceForm;

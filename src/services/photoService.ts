@@ -11,36 +11,61 @@ class PhotoService {
     PART_PHOTOS: 'part_photos',
     NOTE_PHOTOS: 'note_photos'
   };
+  
+  // 主目录
+  private readonly MAIN_DIRECTORY = 'uploads';
 
   // 保存照片到指定目录，并返回访问URL
-  savePhoto(file: File | string, directory: string): Promise<string> {
+  savePhoto(file: File | string, directory: string, additionalInfo?: {
+    licensePlate?: string,
+    vehicleId?: string
+  }): Promise<string> {
     return new Promise((resolve) => {
       // 模拟图片上传过程
       setTimeout(() => {
-        // 在实际项目中，这里应该将文件上传到服务器或云存储
-        // 并返回实际的文件URL
-        const timestamp = Date.now();
+        // 获取时间戳和扩展名
+        const date = new Date();
+        const timestamp = date.toISOString().replace(/[:.]/g, '-').slice(0, 19); // 格式: YYYY-MM-DDTHH-mm-ss
         const extension = typeof file === 'string' 
           ? file.split('.').pop() || 'jpg'
           : file.name.split('.').pop() || 'jpg';
           
-        const fileName = `${directory}_${timestamp}.${extension}`;
+        // 构建文件名：时间_车牌_车辆ID_目录_序号
+        // 如果提供了车牌号，则按照用户要求使用时间加车牌的格式
+        const baseFileName = additionalInfo?.licensePlate 
+          ? `${timestamp}_${additionalInfo.licensePlate.replace(/\s/g, '')}`
+          : `${timestamp}`;
+          
+        // 如果提供了车辆ID，添加到文件名中
+        const fileNameWithId = additionalInfo?.vehicleId 
+          ? `${baseFileName}_${additionalInfo.vehicleId}`
+          : baseFileName;
         
-        // 对于模拟环境，我们使用现有的图片URL，但添加目录信息
+        // 完整文件名
+        const fileName = `${fileNameWithId}_${directory}.${extension}`;
+        
+        // 构建完整的目录路径：主目录/子目录/文件名
+        const fullPath = `${this.MAIN_DIRECTORY}/${directory}/${fileName}`;
+        
+        // 对于模拟环境，我们使用现有的图片URL，但添加完整的路径信息
         // 在实际项目中，这里应该返回实际的文件存储路径
         if (typeof file === 'string') {
-          resolve(`${file}&directory=${directory}&filename=${fileName}`);
+          resolve(`${file}&directory=${fullPath}`);
         } else {
           // 模拟文件上传后的URL
-          resolve(`https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=${encodeURIComponent(directory)}&directory=${directory}&filename=${fileName}`);
+          const prompt = encodeURIComponent(`${directory} photo for ${additionalInfo?.licensePlate || 'vehicle'}`);
+          resolve(`https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=${prompt}&directory=${fullPath}`);
         }
       }, 800); // 模拟网络延迟
     });
   }
 
   // 批量保存照片
-  async savePhotos(files: (File | string)[], directory: string): Promise<string[]> {
-    const savePromises = files.map(file => this.savePhoto(file, directory));
+  async savePhotos(files: (File | string)[], directory: string, additionalInfo?: {
+    licensePlate?: string,
+    vehicleId?: string
+  }): Promise<string[]> {
+    const savePromises = files.map(file => this.savePhoto(file, directory, additionalInfo));
     return Promise.all(savePromises);
   }
 
@@ -65,6 +90,26 @@ class PhotoService {
     
     return true;
   }
+  
+  // 创建目录结构（实际项目中这会在服务器端执行）
+  createDirectoryStructure(): void {
+    // 模拟创建目录结构
+    console.log(`创建目录结构: ${this.MAIN_DIRECTORY}`);
+    
+    // 遍历所有目录类型并创建
+    Object.values(this.DIRECTORIES).forEach(dir => {
+      console.log(`创建子目录: ${this.MAIN_DIRECTORY}/${dir}`);
+    });
+  }
+  
+  // 获取照片存储根目录
+  getRootDirectory(): string {
+    return this.MAIN_DIRECTORY;
+  }
 }
 
+// 初始化照片服务
 export const photoService = new PhotoService();
+
+// 应用启动时创建目录结构
+photoService.createDirectoryStructure();
