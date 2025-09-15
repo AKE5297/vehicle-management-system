@@ -46,7 +46,7 @@
 
 #### 安装步骤
 
-1. 克隆项目代码
+1. 克隆项目
 ```bash
 git clone https://github.com/AKE5297/vehicle-management-system.git
 cd vehicle-management-system
@@ -98,39 +98,39 @@ pnpm build && pnpm start  # 生产模式
    - 在该目录下创建 `uploads` 和 `mongodb-data` 子目录
 
 3. **准备配置文件**
-   - 在 `vehicle-management` 目录下创建 `docker-compose.yml` 文件：
-   ```yaml
-   version: '3.8'
-   
-   services:
-     app:
-       image: node:18-alpine  # 使用 Node.js 18 的 Alpine 镜像，轻量级且适合生产环境
-       container_name: vehicle-management-app  # 容器名称
-       working_dir: /app  # 容器内的工作目录
-       ports:
-         - "3000:3000"  # 映射前端应用端口
-         - "5000:5000"  # 映射后端API端口
-       volumes:
-         - ./:/app  # 将当前目录挂载到容器的/app目录
-         - ./uploads:/app/uploads  # 挂载上传目录，确保照片持久化存储
-       environment:
-         - MONGODB_URI=mongodb://db:27017/vehicle-management  # MongoDB连接字符串，db是服务名称
-         - JWT_SECRET=your-secret-key  # JWT密钥，用于用户认证
-         - UPLOAD_DIR=/app/uploads  # 上传目录路径
-         - PORT=5000  # 后端服务端口
-       depends_on:
-         - db  # 依赖db服务，确保MongoDB先启动
-       command: sh -c "pnpm install && pnpm build && pnpm start"  # 安装依赖、构建项目并启动服务
-       
-     db:
-       image: mongo:latest  # 使用最新版MongoDB镜像
-       container_name: vehicle-management-db  # 数据库容器名称
-       volumes:
-         - ./mongodb-data:/data/db  # 挂载数据目录，确保数据库持久化
-       ports:
-         - "27017:27017"  # 映射MongoDB端口，可选，便于外部连接管理
-       restart: always  # 容器退出时自动重启
-   ```
+   - 在 `vehicle-management` 目录下创建 `docker-compose.yml` 文件，内容如下：
+```yaml
+version: '3.8'
+
+services:
+  app:
+    image: node:18-alpine
+    container_name: vehicle-management-app
+    working_dir: /app
+    ports:
+      - "3000:3000"
+      - "5000:5000"
+    volumes:
+      - ./:/app
+      - ./uploads:/app/uploads
+    environment:
+      - MONGODB_URI=mongodb://db:27017/vehicle-management
+      - JWT_SECRET=your-secret-key
+      - UPLOAD_DIR=/app/uploads
+      - PORT=5000
+    depends_on:
+      - db
+    command: sh -c "git clone https://github.com/AKE5297/vehicle-management-system.git /app && cd /app && npm install -g pnpm && pnpm install && pnpm build && pnpm start"
+    
+  db:
+    image: mongo:latest
+    container_name: vehicle-management-db
+    volumes:
+      - ./mongodb-data:/data/db
+    ports:
+      - "27017:27017"
+    restart: always
+```
 
 4. **通过 SSH 连接到 NAS**
    - 打开 DSM 控制面板，启用 SSH 服务
@@ -139,12 +139,12 @@ pnpm build && pnpm start  # 生产模式
 5. **启动服务**
    ```bash
    cd /volume1/docker/vehicle-management
-   docker-compose up -d  # -d 表示在后台运行
+   docker-compose up -d
    ```
 
 6. **配置照片目录权限**
    ```bash
-   chmod -R 777 ./uploads  # 确保容器有足够权限读写上传目录
+   chmod -R 777 ./uploads
    ```
 
 7. **访问系统**
@@ -191,50 +191,45 @@ pnpm build && pnpm start  # 生产模式
    cd /opt/vehicle-management
    ```
 
-3. **克隆项目代码**
-   ```bash
-   git clone https://github.com/AKE5297/vehicle-management-system.git .
-   ```
-
-4. **创建 docker-compose.yml**
+3. **创建 docker-compose.yml**
    ```yaml
    version: '3.8'
    
    services:
      app:
-       image: node:18-alpine  # Node.js 18 镜像，轻量级且安全
-       container_name: vehicle-management-app  # 应用容器名称
-       working_dir: /app  # 容器内工作目录
+       image: node:18-alpine
+       container_name: vehicle-management-app
+       working_dir: /app
        ports:
-         - "80:3000"  # 直接使用80端口对外提供Web服务
-         - "5000:5000"  # API服务端口
+         - "80:3000"  # 直接使用80端口
+         - "5000:5000"
        volumes:
-         - ./:/app  # 挂载当前目录到容器
-         - ./uploads:/app/uploads  # 挂载上传目录，确保文件持久化
+         - ./:/app
+         - ./uploads:/app/uploads
        environment:
-         - MONGODB_URI=mongodb://db:27017/vehicle-management  # MongoDB连接配置
-         - JWT_SECRET=your-secret-key  # 用于JWT令牌加密的密钥
-         - UPLOAD_DIR=/app/uploads  # 上传目录路径
-         - PORT=5000  # 后端服务端口
+         - MONGODB_URI=mongodb://db:27017/vehicle-management
+         - JWT_SECRET=your-secret-key
+         - UPLOAD_DIR=/app/uploads
+         - PORT=5000
        depends_on:
-         - db  # 依赖数据库服务
-       restart: unless-stopped  # 除非手动停止，否则容器退出时自动重启
-       command: sh -c "pnpm install && pnpm build && pnpm start"  # 安装依赖并启动应用
+         - db
+       restart: unless-stopped
+       command: sh -c "git clone https://github.com/AKE5297/vehicle-management-system.git /app && cd /app && npm install -g pnpm && pnpm install && pnpm build && pnpm start"
        
      db:
-       image: mongo:latest  # 最新版MongoDB镜像
-       container_name: vehicle-management-db  # 数据库容器名称
+       image: mongo:latest
+       container_name: vehicle-management-db
        volumes:
-         - ./mongodb-data:/data/db  # 挂载数据卷，确保数据持久化
-       restart: unless-stopped  # 自动重启策略
+         - ./mongodb-data:/data/db
+       restart: unless-stopped
    ```
 
-5. **启动服务**
+4. **启动服务**
    ```bash
    docker-compose up -d
    ```
 
-6. **配置防火墙**
+5. **配置防火墙**
    ```bash
    # Ubuntu/Debian
    ufw allow 80
@@ -305,93 +300,87 @@ GitHub Pages 仅支持静态网站部署，此项目包含后端服务，因此�
 
 #### 前端部署 + 远程后端
 
-1. **克隆项目代码**
-   ```bash
-   git clone https://github.com/AKE5297/vehicle-management-system.git
-   cd vehicle-management-system
-   ```
-
-2. **构建前端**
+1. **构建前端**
    ```bash
    pnpm build:client
    ```
 
-3. **配置 API 地址**
+2. **配置 API 地址**
    - 在 `src/services/mockService.ts` 中修改 `API_BASE_URL` 为您的后端服务地址
 
-4. **部署到 GitHub Pages**
+3. **部署到 GitHub Pages**
    ```bash
    npm install -g gh-pages
    gh-pages -d dist/static
    ```
 
-5. **设置自定义域名 (可选)**
+4. **设置自定义域名 (可选)**
    - 在 GitHub 仓库设置中配置自定义域名
 
-### 5. Cloudflare Workers 部署
+### 5. Cloudflare Pages 部署
 
-Cloudflare Workers 主要用于部署无服务器函数，对于完整的全栈应用，建议使用 Cloudflare Pages + D1/Database。
+Cloudflare Pages 支持静态网站和部分无服务器功能，但对于完整的全栈应用，您需要将后端部署到其他服务。下面是前端部署到 Cloudflare Pages 的方法：
 
-#### Cloudflare Pages 部署
+#### 前端部署 + 远程后端
 
 1. **登录 Cloudflare 账户**
    - 访问 [Cloudflare Dashboard](https://dash.cloudflare.com/)
    - 选择 "Pages" 选项卡
 
 2. **创建新项目**
-   - 连接您的 GitHub 仓库：https://github.com/AKE5297/vehicle-management-system.git
-   - 选择项目仓库
+   - 连接您的 GitHub 仓库：https://github.com/AKE5297/vehicle-management-system
    - 配置构建设置：
      - 构建命令: `pnpm build:client`
      - 构建输出目录: `dist/static`
      - 环境变量:
        - `NODE_VERSION`: 18
        - `VITE_API_BASE_URL`: `https://your-backend-api.com/api`
+       - `VITE_USE_REAL_API`: `true`
 
 3. **部署**
    - 点击 "Save and Deploy" 开始部署过程
 
-4. **配置后端**
-   - 您需要将后端部署到其他支持 Node.js 的平台，如 Cloudflare Workers 或其他云服务
+4. **配置自定义域名 (可选)**
+   - 在 Pages 设置中配置自定义域名
 
-#### Cloudflare Workers 后端部署
+#### 配置远程后端
 
-1. **安装 Wrangler CLI**
+由于 Cloudflare Pages 主要用于静态内容部署，您需要将后端部署到其他支持 Node.js 的平台，如:
+
+- Cloudflare Workers
+- Vercel Serverless Functions
+- AWS Lambda
+- Google Cloud Functions
+- 自建服务器
+
+在前端部署完成后，确保在 Cloudflare Pages 设置中正确配置了 `VITE_API_BASE_URL` 环境变量，指向您的后端服务地址。
+
+### 6. 使用 docker-compose.yml 一键部署
+
+如果您的环境已安装 Docker 和 Docker Compose，可以直接使用项目根目录下的 `docker-compose.yml` 文件进行一键部署：
+
+1. **创建项目目录**
    ```bash
-   npm install -g wrangler
-   wrangler login
+   mkdir vehicle-management && cd vehicle-management
    ```
 
-2. **初始化项目**
+2. **创建 docker-compose.yml 文件**
    ```bash
-   mkdir vehicle-management-api
-   cd vehicle-management-api
-   wrangler init
+   nano docker-compose.yml
    ```
+   复制项目根目录中的 docker-compose.yml 内容并保存
 
-3. **配置 wrangler.toml**
-   ```toml
-   name = "vehicle-management-api"
-   main = "src/index.ts"
-   compatibility_date = "2023-12-01"
-   ```
-
-4. **创建简单的 API 服务器**
-   ```typescript
-   // src/index.ts
-   export default {
-     async fetch(request: Request, env: any, ctx: any): Promise<Response> {
-       // 这里需要重写后端API以适应Cloudflare Workers环境
-       // 注意：Cloudflare Workers不支持直接连接MongoDB，需要使用MongoDB Atlas Data API或其他兼容方案
-       return new Response('API endpoint', { status: 200 });
-     },
-   };
-   ```
-
-5. **部署 Workers**
+3. **启动服务**
    ```bash
-   wrangler deploy
+   docker-compose up -d
    ```
+
+4. **等待部署完成**
+   - 首次启动时需要拉取代码和依赖，时间会稍长
+   - 可以通过 `docker logs vehicle-management-app` 查看部署进度
+
+5. **访问系统**
+   - 打开浏览器，访问 `http://localhost:3000`
 
 ## 默认账户
 
@@ -400,6 +389,23 @@ Cloudflare Workers 主要用于部署无服务器函数，对于完整的全栈�
 - 密码: `admin123`
 
 请登录后及时修改密码。
+
+## 照片文件存储结构
+
+系统使用以下目录结构存储不同类型的照片：
+
+```
+uploads/
+├── vehicle_photos/      # 车辆基本照片
+├── entry_photos/        # 车辆进场照片
+├── exit_photos/         # 车辆离场照片
+├── maintenance_photos/  # 维修过程照片
+├── invoice_photos/      # 发票照片
+├── part_photos/         # 配件照片
+└── note_photos/         # 备注照片
+```
+
+文件名格式：`时间戳_车牌号_车辆ID_目录类型.扩展名`
 
 ## 常见问题
 
