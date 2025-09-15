@@ -46,7 +46,7 @@
 
 #### 安装步骤
 
-1. 克隆项目
+1. 克隆项目代码
 ```bash
 git clone https://github.com/AKE5297/vehicle-management-system.git
 cd vehicle-management-system
@@ -104,32 +104,32 @@ pnpm build && pnpm start  # 生产模式
    
    services:
      app:
-       image: node:18-alpine
-       container_name: vehicle-management-app
-       working_dir: /app
+       image: node:18-alpine  # 使用 Node.js 18 的 Alpine 镜像，轻量级且适合生产环境
+       container_name: vehicle-management-app  # 容器名称
+       working_dir: /app  # 容器内的工作目录
        ports:
-         - "3000:3000"
-         - "5000:5000"
+         - "3000:3000"  # 映射前端应用端口
+         - "5000:5000"  # 映射后端API端口
        volumes:
-         - ./:/app
-         - ./uploads:/app/uploads
+         - ./:/app  # 将当前目录挂载到容器的/app目录
+         - ./uploads:/app/uploads  # 挂载上传目录，确保照片持久化存储
        environment:
-         - MONGODB_URI=mongodb://db:27017/vehicle-management
-         - JWT_SECRET=your-secret-key
-         - UPLOAD_DIR=/app/uploads
-         - PORT=5000
+         - MONGODB_URI=mongodb://db:27017/vehicle-management  # MongoDB连接字符串，db是服务名称
+         - JWT_SECRET=your-secret-key  # JWT密钥，用于用户认证
+         - UPLOAD_DIR=/app/uploads  # 上传目录路径
+         - PORT=5000  # 后端服务端口
        depends_on:
-         - db
-       command: sh -c "pnpm install && pnpm build && pnpm start"
+         - db  # 依赖db服务，确保MongoDB先启动
+       command: sh -c "pnpm install && pnpm build && pnpm start"  # 安装依赖、构建项目并启动服务
        
      db:
-       image: mongo:latest
-       container_name: vehicle-management-db
+       image: mongo:latest  # 使用最新版MongoDB镜像
+       container_name: vehicle-management-db  # 数据库容器名称
        volumes:
-         - ./mongodb-data:/data/db
+         - ./mongodb-data:/data/db  # 挂载数据目录，确保数据库持久化
        ports:
-         - "27017:27017"
-       restart: always
+         - "27017:27017"  # 映射MongoDB端口，可选，便于外部连接管理
+       restart: always  # 容器退出时自动重启
    ```
 
 4. **通过 SSH 连接到 NAS**
@@ -139,12 +139,12 @@ pnpm build && pnpm start  # 生产模式
 5. **启动服务**
    ```bash
    cd /volume1/docker/vehicle-management
-   docker-compose up -d
+   docker-compose up -d  # -d 表示在后台运行
    ```
 
 6. **配置照片目录权限**
    ```bash
-   chmod -R 777 ./uploads
+   chmod -R 777 ./uploads  # 确保容器有足够权限读写上传目录
    ```
 
 7. **访问系统**
@@ -191,42 +191,42 @@ pnpm build && pnpm start  # 生产模式
    cd /opt/vehicle-management
    ```
 
-3. **创建 docker-compose.yml**
+3. **克隆项目代码**
+   ```bash
+   git clone https://github.com/AKE5297/vehicle-management-system.git .
+   ```
+
+4. **创建 docker-compose.yml**
    ```yaml
    version: '3.8'
    
    services:
      app:
-       image: node:18-alpine
-       container_name: vehicle-management-app
-       working_dir: /app
+       image: node:18-alpine  # Node.js 18 镜像，轻量级且安全
+       container_name: vehicle-management-app  # 应用容器名称
+       working_dir: /app  # 容器内工作目录
        ports:
-         - "80:3000"  # 直接使用80端口
-         - "5000:5000"
+         - "80:3000"  # 直接使用80端口对外提供Web服务
+         - "5000:5000"  # API服务端口
        volumes:
-         - ./:/app
-         - ./uploads:/app/uploads
+         - ./:/app  # 挂载当前目录到容器
+         - ./uploads:/app/uploads  # 挂载上传目录，确保文件持久化
        environment:
-         - MONGODB_URI=mongodb://db:27017/vehicle-management
-         - JWT_SECRET=your-secret-key
-         - UPLOAD_DIR=/app/uploads
-         - PORT=5000
+         - MONGODB_URI=mongodb://db:27017/vehicle-management  # MongoDB连接配置
+         - JWT_SECRET=your-secret-key  # 用于JWT令牌加密的密钥
+         - UPLOAD_DIR=/app/uploads  # 上传目录路径
+         - PORT=5000  # 后端服务端口
        depends_on:
-         - db
-       restart: unless-stopped
-       command: sh -c "pnpm install && pnpm build && pnpm start"
+         - db  # 依赖数据库服务
+       restart: unless-stopped  # 除非手动停止，否则容器退出时自动重启
+       command: sh -c "pnpm install && pnpm build && pnpm start"  # 安装依赖并启动应用
        
      db:
-       image: mongo:latest
-       container_name: vehicle-management-db
+       image: mongo:latest  # 最新版MongoDB镜像
+       container_name: vehicle-management-db  # 数据库容器名称
        volumes:
-         - ./mongodb-data:/data/db
-       restart: unless-stopped
-   ```
-
-4. **拉取项目代码**
-   ```bash
-   git clone <项目仓库地址> .
+         - ./mongodb-data:/data/db  # 挂载数据卷，确保数据持久化
+       restart: unless-stopped  # 自动重启策略
    ```
 
 5. **启动服务**
@@ -263,7 +263,7 @@ pnpm build && pnpm start  # 生产模式
 
 3. **克隆项目**
    ```bash
-   git clone <项目仓库地址> /opt/vehicle-management
+   git clone https://github.com/AKE5297/vehicle-management-system.git /opt/vehicle-management
    cd /opt/vehicle-management
    ```
 
@@ -305,21 +305,27 @@ GitHub Pages 仅支持静态网站部署，此项目包含后端服务，因此�
 
 #### 前端部署 + 远程后端
 
-1. **构建前端**
+1. **克隆项目代码**
+   ```bash
+   git clone https://github.com/AKE5297/vehicle-management-system.git
+   cd vehicle-management-system
+   ```
+
+2. **构建前端**
    ```bash
    pnpm build:client
    ```
 
-2. **配置 API 地址**
+3. **配置 API 地址**
    - 在 `src/services/mockService.ts` 中修改 `API_BASE_URL` 为您的后端服务地址
 
-3. **部署到 GitHub Pages**
+4. **部署到 GitHub Pages**
    ```bash
    npm install -g gh-pages
    gh-pages -d dist/static
    ```
 
-4. **设置自定义域名 (可选)**
+5. **设置自定义域名 (可选)**
    - 在 GitHub 仓库设置中配置自定义域名
 
 ### 5. Cloudflare Workers 部署
@@ -333,7 +339,7 @@ Cloudflare Workers 主要用于部署无服务器函数，对于完整的全栈�
    - 选择 "Pages" 选项卡
 
 2. **创建新项目**
-   - 连接您的 GitHub 仓库
+   - 连接您的 GitHub 仓库：https://github.com/AKE5297/vehicle-management-system.git
    - 选择项目仓库
    - 配置构建设置：
      - 构建命令: `pnpm build:client`
