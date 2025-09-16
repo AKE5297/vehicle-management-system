@@ -42,7 +42,76 @@
 #### 前置条件
 - Node.js 16+
 - npm/pnpm/yarn
-- MongoDB
+- MongoDB (v5.0+)
+
+#### MongoDB 安装与配置
+
+##### 方法 1: 本地安装 MongoDB
+
+**Windows 安装:**
+1. 访问 [MongoDB 官网](https://www.mongodb.com/try/download/community) 下载适合的版本
+2. 运行安装程序，选择 "Complete" 安装
+3. 安装完成后，MongoDB 服务通常会自动启动
+
+**macOS 安装:**
+```bash
+# 使用 Homebrew
+brew tap mongodb/brew
+brew install mongodb-community@5.0
+brew services start mongodb-community
+```
+
+**Linux 安装 (Ubuntu/Debian):**
+```bash
+# 导入 MongoDB 公钥
+wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
+
+# 添加 MongoDB 仓库
+echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
+
+# 安装 MongoDB
+sudo apt update
+sudo apt install -y mongodb-org
+
+# 启动 MongoDB 服务
+sudo systemctl start mongod
+sudo systemctl enable mongod  # 设置开机自启
+```
+
+##### 方法 2: Docker 安装 MongoDB
+```bash
+# 拉取 MongoDB 镜像
+docker pull mongo:latest
+
+# 启动 MongoDB 容器
+docker run -d -p 27017:27017 --name mongodb -v mongodb_data:/data/db mongo
+```
+
+##### MongoDB 基本配置
+
+1. 连接 MongoDB 并创建数据库:
+```bash
+# 打开 MongoDB Shell
+mongo
+
+# 创建数据库
+use vehicle-management
+
+# 创建用户并授权
+db.createUser({
+  user: "vehicleAdmin",
+  pwd: "your-strong-password",
+  roles: [{ role: "readWrite", db: "vehicle-management" }]
+})
+
+# 退出 Shell
+exit
+```
+
+2. 带认证的连接字符串格式:
+```
+mongodb://vehicleAdmin:your-strong-password@localhost:27017/vehicle-management?authSource=vehicle-management
+```
 
 #### 安装步骤
 
@@ -60,6 +129,13 @@ pnpm install
 3. 创建环境变量文件 `.env`
 ```env
 # MongoDB 连接字符串
+# 基本连接 (无认证)
+# MONGODB_URI=mongodb://localhost:27017/vehicle-management
+
+# 带认证的连接字符串示例
+MONGODB_URI=mongodb://vehicleAdmin:your-strong-password@localhost:27017/vehicle-management?authSource=vehicle-management
+
+# JWT 密钥
 MONGODB_URI=mongodb://localhost:27017/vehicle-management
 
 # JWT 密钥
@@ -414,8 +490,10 @@ uploads/
    - 确认照片存储路径配置正确
 
 2. **数据库连接失败**
-   - 检查 MongoDB 服务是否运行
-   - 验证连接字符串是否正确
+   - 检查 MongoDB 服务是否运行: `systemctl status mongod` 或 `docker ps | grep mongodb`
+   - 验证连接字符串是否正确，特别是认证信息
+   - 确认 MongoDB 用户权限设置正确
+   - 检查防火墙是否允许访问 27017 端口
 
 3. **部署到子路径后路由问题**
    - 在 Vite 配置中设置 `base` 选项
