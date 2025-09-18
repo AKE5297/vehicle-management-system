@@ -169,6 +169,46 @@ const InvoiceForm = () => {
     }
   };
   
+  // Handle OCR photo upload and processing
+  const handleOcrUpload = async (urls: string[]) => {
+    if (urls.length > 0) {
+      // Simulate OCR processing
+      setSubmitting(true);
+      setTimeout(() => {
+        // Mock OCR results
+        const mockResults = {
+          invoiceNumber: `FP-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
+          date: new Date().toISOString(),
+          amount: (Math.random() * 1000 + 100).toFixed(2),
+          vehicleLicensePlate: '京A' + Math.floor(Math.random() * 100000).toString().padStart(5, '0'),
+          items: [
+            { id: '1', description: '维修费', quantity: 1, unitPrice: (Math.random() * 500 + 100).toFixed(2), totalPrice: '' },
+            { id: '2', description: '零件费', quantity: 1, unitPrice: (Math.random() * 300 + 50).toFixed(2), totalPrice: '' }
+          ]
+        };
+        
+        // Calculate total prices
+        mockResults.items.forEach(item => {
+          item.totalPrice = (parseFloat(item.quantity.toString()) * parseFloat(item.unitPrice)).toFixed(2);
+        });
+        
+        // Update form data with OCR results
+        setFormData(prev => ({
+          ...prev,
+          ...mockResults,
+          photo: urls[0]
+        }));
+        
+        // Switch back to invoice tab
+        setActiveTab('invoice');
+        setSubmitting(false);
+        
+        // Show success message
+        toast.success('OCR识别成功，已自动填充表单');
+      }, 2000);
+    }
+  };
+  
   // Handle form submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -535,84 +575,9 @@ const InvoiceForm = () => {
                       maxFiles={1}
                       multiple={false}
                       buttonText="选择发票照片"
-                       maxSize={2000} // 2MB limit for better OCR accuracy
-                       onUpload={(urls) => {
-                         if (urls.length > 0) {
-                           // Simulate OCR processing
-                           setSubmitting(true);
-                           setTimeout(() => {
-                             // Mock OCR results
-                             const mockResults = {
-                               invoiceNumber: `FP-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-                               date: new Date().toISOString(),
-                               amount: (Math.random() * 1000 + 100).toFixed(2),
-                               vehicleLicensePlate: '京A' + Math.floor(Math.random() * 100000).toString().padStart(5, '0'),
-                               items: [
-                                 { id: '1', description: '维修费', quantity: 1, unitPrice: (Math.random() * 500 + 100).toFixed(2), totalPrice: '' },
-                                 { id: '2', description: '零件费', quantity: 1, unitPrice: (Math.random() * 300 + 50).toFixed(2), totalPrice: '' }
-                               ]
-                             };
-                             
-                             // Calculate total prices
-                             mockResults.items.forEach(item => {
-                               item.totalPrice = (parseFloat(item.quantity.toString()) * parseFloat(item.unitPrice)).toFixed(2);
-                             });
-                             
-                             // Update form data with OCR results
-                             setFormData(prev => ({
-                               ...prev,
-                               ...mockResults,
-                               photo: urls[0]
-                             }));
-                             
-                             // Switch back to invoice tab
-                             setActiveTab('invoice');
-                             setSubmitting(false);
-                             
-                             // Show success message
-                             toast.success('OCR识别成功，已自动填充表单');
-                           }, 2000);
-                         }
-                       }}
+                      maxSize={2000} // 2MB limit for better OCR accuracy
                       helpText="支持JPG、PNG格式，建议拍摄清晰的发票照片"
-                      onUpload={(urls) => {
-                        if (urls.length > 0) {
-                          // Simulate OCR processing
-                          setSubmitting(true);
-                          setTimeout(() => {
-                            // Mock OCR results
-                            const mockResults = {
-                              invoiceNumber: `FP-${new Date().getFullYear()}${String(new Date().getMonth() + 1).padStart(2, '0')}${String(new Date().getDate()).padStart(2, '0')}-${Math.floor(Math.random() * 1000).toString().padStart(3, '0')}`,
-                              date: new Date().toISOString(),
-                              amount: (Math.random() * 1000 + 100).toFixed(2),
-                              vehicleLicensePlate: '京A' + Math.floor(Math.random() * 100000).toString().padStart(5, '0'),
-                              items: [
-                                { id: '1', description: '维修费', quantity: 1, unitPrice: (Math.random() * 500 + 100).toFixed(2), totalPrice: '' },
-                                { id: '2', description: '零件费', quantity: 1, unitPrice: (Math.random() * 300 + 50).toFixed(2), totalPrice: '' }
-                              ]
-                            };
-                            
-                            // Calculate total prices
-                            mockResults.items.forEach(item => {
-                              item.totalPrice = (parseFloat(item.quantity.toString()) * parseFloat(item.unitPrice)).toFixed(2);
-                            });
-                            
-                            // Update form data with OCR results
-                            setFormData(prev => ({
-                              ...prev,
-                              ...mockResults,
-                              photo: urls[0]
-                            }));
-                            
-                            // Switch back to invoice tab
-                            setActiveTab('invoice');
-                            setSubmitting(false);
-                            
-                            // Show success message
-                            toast.success('OCR识别成功，已自动填充表单');
-                          }, 2000);
-                        }
-                      }}
+                      onUpload={handleOcrUpload}
                     />
                   </div>
                   
@@ -629,7 +594,7 @@ const InvoiceForm = () => {
                       </li>
                       <li className="flex items-start">
                         <i className="fa-solid fa-check-circle text-green-500 mt-1 mr-2"></i>
-                        <span>识别结果仅供参考，请核对后提交</span>
+
                       </li>
                     </ul>
                   </div>

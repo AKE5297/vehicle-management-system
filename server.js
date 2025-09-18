@@ -1,9 +1,10 @@
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import fs from 'fs';
 
 // 加载环境变量
 dotenv.config();
@@ -117,8 +118,7 @@ const SystemLogSchema = new mongoose.Schema({
 // 创建模型
 const User = mongoose.model('User', UserSchema);
 const Vehicle = mongoose.model('Vehicle', VehicleSchema);
-const MaintenanceRecord = mongoose.model('MaintenanceRecord', MaintenanceRecordSchema);
-const Invoice = mongoose.model('Invoice', InvoiceSchema);
+const MaintenanceRecord = mongoose.model('MaintenanceRecord', MaintenanceRecordSchema);const Invoice = mongoose.model('Invoice', InvoiceSchema);
 const SystemLog = mongoose.model('SystemLog', SystemLogSchema);
 
 // 认证中间件
@@ -437,8 +437,7 @@ app.post('/api/users', authMiddleware, async (req, res) => {
     
     res.status(201).json(userWithoutPassword);
   } catch (error) {
-    console.error('创建用户错误:', error);
-    res.status(500).json({ message: '服务器错误' });
+    console.error('创建用户错误:', error);res.status(500).json({ message: '服务器错误' });
   }
 });
 
@@ -482,7 +481,6 @@ app.post('/api/users', authMiddleware, async (req, res) => {
       const fullPath = `${process.env.UPLOAD_DIR || 'uploads'}/${directory}/${uniqueFilename}`;
       
       // 创建目录（如果不存在）
-      const fs = require('fs');
       const directoryPath = `${process.env.UPLOAD_DIR || 'uploads'}/${directory}`;
       if (!fs.existsSync(directoryPath)) {
         fs.mkdirSync(directoryPath, { recursive: true });
