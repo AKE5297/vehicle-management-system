@@ -140,31 +140,14 @@ const VehicleForm = () => {
     setFormData(prev => ({ ...prev, serviceType: value }));
   };
   
-   // Handle photo uploads
+   // Handle photo uploads - 直接使用ImageUploader返回的URL，因为已经通过photoService处理过了
   const handlePhotosUpload = async (urls: string[]) => {
     try {
       console.log('接收到上传的照片URLs:', urls);
       
-      // 验证URL有效性
-      const validUrls = [];
-      for (const url of urls) {
-        try {
-          // 检查URL格式是否有效
-          new URL(url);
-          validUrls.push(url);
-        } catch (e) {
-          console.error('无效的图片URL:', url);
-        }
-      }
-      
-      // 更新表单数据
-      setFormData(prev => ({ ...prev, photos: validUrls }));
-      toast.success(`成功上传${validUrls.length}张车辆照片`);
-      
-      // 如果有无效的URL，显示警告
-      if (validUrls.length < urls.length) {
-        toast.warning(`有${urls.length - validUrls.length}张图片URL无效，已自动过滤`);
-      }
+      // 直接更新表单数据，因为ImageUploader已经处理了验证和上传
+      setFormData(prev => ({ ...prev, photos: urls }));
+      toast.success(`成功上传${urls.length}张车辆照片`);
     } catch (error) {
       console.error('Error setting photos:', error);
       toast.error('照片处理失败，请重试');
@@ -607,16 +590,19 @@ const VehicleForm = () => {
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                       车辆照片 (支持多张，自动压缩至1080P)
                     </label>
-                     <ImageUploader
-                       maxFiles={20}
-                       initialImages={formData.photos}
-                       onUpload={handlePhotosUpload}
-                       buttonText="上传车辆照片"
-                       additionalInfo={{
-                         licensePlate: formData.licensePlate,
-                         vehicleId: formData.id || undefined
-                       }}
-                     />
+                       <ImageUploader
+                         maxFiles={25}
+                         initialImages={formData.photos}
+                         onUpload={handlePhotosUpload}
+                         buttonText="批量上传车辆照片 (最多25张)"
+                         helpText="支持JPG、PNG等常见图片格式，单张不超过5MB。您可以选择多个文件同时上传，或拖拽文件到虚线框内。"
+                         additionalInfo={{
+                           licensePlate: formData.licensePlate,
+                           vehicleId: formData.id || undefined
+                         }}
+                         showUploadProgress={true}
+                         multiple
+                       />
                   </div>
                   
                   {/* Entry photo with watermark */}

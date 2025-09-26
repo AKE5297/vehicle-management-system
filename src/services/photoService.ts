@@ -112,19 +112,30 @@ class PhotoService {
     }
   }
 
-  // 批量保存照片
-  async savePhotos(files: (File | string)[], directory: string, additionalInfo?: {
-    licensePlate?: string,
-    vehicleId?: string
-  }): Promise<string[]> {
-    try {
-      const savePromises = files.map(file => this.savePhoto(file, directory, additionalInfo));
-      return Promise.all(savePromises);
-    } catch (error) {
-      console.error('批量保存照片失败:', error);
-      throw error;
-    }
-  }
+   // 批量保存照片 - 优化性能和错误处理
+   async savePhotos(files: (File | string)[], directory: string, additionalInfo?: {
+     licensePlate?: string,
+     vehicleId?: string
+   }): Promise<string[]> {
+     try {
+       // 验证所有文件
+       for (const file of files) {
+         if (typeof file !== 'string' && !this.validateImage(file)) {
+           throw new Error('包含不支持的图片格式或大小超过限制的文件');
+         }
+       }
+       
+       // 并行保存所有照片，提高性能
+       const savePromises = files.map(file => this.savePhoto(file, directory, additionalInfo));
+       const results = await Promise.all(savePromises);
+       
+       console.log(`成功批量上传${results.length}张照片`);
+       return results;
+     } catch (error) {
+       console.error('批量保存照片失败:', error);
+       throw error;
+     }
+   }
 
   // 获取不同类型照片的目录
   getDirectory(type: keyof typeof this.DIRECTORIES): string {

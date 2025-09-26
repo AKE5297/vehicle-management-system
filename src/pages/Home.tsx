@@ -5,6 +5,82 @@ import { mockService } from '../services/mockService';
 import { Vehicle } from '../types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { cn } from '../lib/utils';
+import { isUsingRealAPI } from '../services/mockService';
+
+// Database connection status component
+const ServerStatus: React.FC = () => {
+  const [status, setStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking');
+  const [dbStatus, setDbStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking');
+  const [apiStatus, setApiStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking');
+  
+  // Check server and database status
+  useEffect(() => {
+    const checkStatus = async () => {
+      // For mock service, we'll just assume it's connected
+      setStatus('connected');
+      setApiStatus('connected');
+      
+      // Simulate database check
+      try {
+        // Try to make a simple request to check database connectivity
+        await mockService.getVehicles();
+        setDbStatus('connected');
+      } catch (error) {
+        setDbStatus('disconnected');
+        console.error('Database connectivity check failed:', error);
+      }
+    };
+    
+    checkStatus();
+    
+    // Periodically check status
+    const interval = setInterval(checkStatus, 30000); // Check every 30 seconds
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <div className="flex items-center space-x-4">
+      {/* Server status */}
+      <div className="flex items-center">
+        <div className={`w-3 h-3 rounded-full mr-2 ${
+          status === 'connected' ? 'bg-green-500' : 
+          status === 'disconnected' ? 'bg-red-500' : 
+          'bg-yellow-500 animate-pulse'
+        }`}></div>
+        <span className="text-sm">服务器</span>
+      </div>
+      
+      {/* Database status */}
+      <div className="flex items-center">
+        <div className={`w-3 h-3 rounded-full mr-2 ${
+          dbStatus === 'connected' ? 'bg-green-500' : 
+          dbStatus === 'disconnected' ? 'bg-red-500' : 
+          'bg-yellow-500 animate-pulse'
+        }`}></div>
+        <span className="text-sm">数据库</span>
+      </div>
+      
+      {/* API status */}
+      <div className="flex items-center">
+        <div className={`w-3 h-3 rounded-full mr-2 ${
+          apiStatus === 'connected' ? 'bg-green-500' : 
+          apiStatus === 'disconnected' ? 'bg-red-500' : 
+          'bg-yellow-500 animate-pulse'
+        }`}></div>
+        <span className="text-sm">API</span>
+      </div>
+      
+      {/* Environment indicator */}
+      <div className={`text-xs px-2 py-1 rounded ${
+        isUsingRealAPI() ? 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300' : 
+        'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
+      }`}>
+        {isUsingRealAPI() ? '真实环境' : '模拟环境'}
+      </div>
+    </div>
+  );
+};
 
 // Dashboard home page
 const Home = () => {
@@ -128,13 +204,13 @@ const Home = () => {
   return (
     <div className="space-y-6">
       {/* Page header */}
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 dark:text-white">仪表盘</h1>
           <p className="text-gray-500 dark:text-gray-400 mt-1">欢迎使用车辆管理系统，查看最新数据和快速操作</p>
         </div>
         
-        <div className="flex flex-wrap gap-3">
+        <div className="flex flex-wrap gap-3 items-center">
           {quickActions.map((action, index) => (
             <Link
               key={index}
@@ -148,6 +224,9 @@ const Home = () => {
               <span>{action.title}</span>
             </Link>
           ))}
+          
+          {/* Server status indicator */}
+          <ServerStatus />
         </div>
       </div>
       
