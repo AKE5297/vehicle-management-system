@@ -143,23 +143,31 @@ const VehicleForm = () => {
    // Handle photo uploads
   const handlePhotosUpload = async (urls: string[]) => {
     try {
-      // 创建目录结构（如果不存在）
-      photoService.createDirectoryStructure();
+      console.log('接收到上传的照片URLs:', urls);
       
-      // 使用photoService保存照片
-      const directory = photoService.getDirectory('VEHICLE_PHOTOS');
-      const formattedUrls = await Promise.all(
-        urls.map(url => photoService.savePhoto(url, directory, {
-          licensePlate: formData.licensePlate,
-          vehicleId: formData.id || undefined
-        }))
-      );
+      // 验证URL有效性
+      const validUrls = [];
+      for (const url of urls) {
+        try {
+          // 检查URL格式是否有效
+          new URL(url);
+          validUrls.push(url);
+        } catch (e) {
+          console.error('无效的图片URL:', url);
+        }
+      }
       
-      setFormData(prev => ({ ...prev, photos: formattedUrls }));
-      toast.success(`成功上传${urls.length}张车辆照片`);
+      // 更新表单数据
+      setFormData(prev => ({ ...prev, photos: validUrls }));
+      toast.success(`成功上传${validUrls.length}张车辆照片`);
+      
+      // 如果有无效的URL，显示警告
+      if (validUrls.length < urls.length) {
+        toast.warning(`有${urls.length - validUrls.length}张图片URL无效，已自动过滤`);
+      }
     } catch (error) {
-      console.error('Error uploading photos:', error);
-      toast.error('照片上传失败，请重试');
+      console.error('Error setting photos:', error);
+      toast.error('照片处理失败，请重试');
     }
   }
   
@@ -167,21 +175,12 @@ const VehicleForm = () => {
   const handleEntryPhotoUpload = async (urls: string[]) => {
     if (urls.length > 0) {
       try {
-        // 创建目录结构（如果不存在）
-        photoService.createDirectoryStructure();
-        
-        // 使用photoService保存照片
-        const directory = photoService.getDirectory('ENTRY_PHOTOS');
-        const formattedUrl = await photoService.savePhoto(urls[0], directory, {
-          licensePlate: formData.licensePlate,
-          vehicleId: formData.id || undefined
-        });
-        
-        setFormData(prev => ({ ...prev, entryPhoto: formattedUrl }));
+        // 直接使用上传器返回的URL，因为已经通过photoService处理过了
+        setFormData(prev => ({ ...prev, entryPhoto: urls[0] }));
         toast.success('进场照片上传成功');
       } catch (error) {
-        console.error('Error uploading entry photo:', error);
-        toast.error('进场照片上传失败，请重试');
+        console.error('Error setting entry photo:', error);
+        toast.error('进场照片处理失败，请重试');
       }
     }
   }
@@ -190,21 +189,12 @@ const VehicleForm = () => {
   const handleExitPhotoUpload = async (urls: string[]) => {
     if (urls.length > 0) {
       try {
-        // 创建目录结构（如果不存在）
-        photoService.createDirectoryStructure();
-        
-        // 使用photoService保存照片
-        const directory = photoService.getDirectory('EXIT_PHOTOS');
-        const formattedUrl = await photoService.savePhoto(urls[0], directory, {
-          licensePlate: formData.licensePlate,
-          vehicleId: formData.id || undefined
-        });
-        
-        setFormData(prev => ({ ...prev, exitPhoto: formattedUrl }));
+        // 直接使用上传器返回的URL，因为已经通过photoService处理过了
+        setFormData(prev => ({ ...prev, exitPhoto: urls[0] }));
         toast.success('离场照片上传成功');
       } catch (error) {
-        console.error('Error uploading exit photo:', error);
-        toast.error('离场照片上传失败，请重试');
+        console.error('Error setting exit photo:', error);
+        toast.error('离场照片处理失败，请重试');
       }
     }
   }

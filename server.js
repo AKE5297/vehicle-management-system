@@ -5,6 +5,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import fs from 'fs';
+import path from 'path';
+import multer from 'multer';
 
 // 加载环境变量
 dotenv.config();
@@ -441,75 +443,118 @@ app.post('/api/users', authMiddleware, async (req, res) => {
   }
 });
 
+  // 静态文件服务 - 提供上传目录的访问
+  app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+  
   // 文件上传处理
   app.post('/api/upload', authMiddleware, async (req, res) => {
     try {
-      // 在实际应用中，应该使用multer或其他文件上传中间件处理文件上传
-      // 这里我们模拟文件上传的处理过程
-      
-      const { directory, filename, type, base64Data, additionalInfo } = req.body;
-      
-      // 验证必要的参数
-      if (!directory || !filename || !base64Data) {
-        return res.status(400).json({ message: '缺少必要的上传参数' });
+      // 确保上传目录存在
+      const uploadDir = process.env.UPLOAD_DIR || 'uploads';
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+        console.log(`创建上传目录: ${uploadDir}`);
       }
       
-      // 生成时间戳用于文件名
-      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-      
-      // 构建文件名：时间_车牌_车辆ID_目录类型.扩展名
-      let baseFileName = timestamp;
-      
-      // 如果提供了车牌号，添加到文件名
-      if (additionalInfo?.licensePlate) {
-        baseFileName = `${timestamp}_${additionalInfo.licensePlate.replace(/\s/g, '')}`;
-      }
-      
-      // 如果提供了车辆ID，添加到文件名
-      if (additionalInfo?.vehicleId) {
-        baseFileName = `${baseFileName}_${additionalInfo.vehicleId}`;
-      }
-      
-      // 添加目录类型
-      baseFileName = `${baseFileName}_${directory}`;
-      
-      // 生成唯一的文件名
-      const extension = filename.split('.').pop() || 'jpg';
-      const uniqueFilename = `${baseFileName}.${extension}`;
-      
-      // 构建完整的目录路径：主目录/子目录/文件名
-      const fullPath = `${process.env.UPLOAD_DIR || 'uploads'}/${directory}/${uniqueFilename}`;
-      
-      // 创建目录（如果不存在）
-      const directoryPath = `${process.env.UPLOAD_DIR || 'uploads'}/${directory}`;
-      if (!fs.existsSync(directoryPath)) {
-        fs.mkdirSync(directoryPath, { recursive: true });
-        console.log(`创建目录: ${directoryPath}`);
-      }
-      
-      // 在实际应用中，这里应该将base64数据转换为文件并保存到指定目录
-      // 这里我们只返回一个模拟的URL，但包含真实的路径信息
-      const photoUrl = `https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=${encodeURIComponent(type || 'vehicle')}&directory=${encodeURIComponent(fullPath)}`;
-      
-      // 记录文件上传日志
-      await SystemLog.create({
-        userId: req.user.id,
-        action: 'upload',
-        entityType: 'file',
-        entityId: uniqueFilename,
-        details: { directory, type, fullPath, additionalInfo },
-        ipAddress: req.ip
+      // 使用multer处理文件上传
+      const storage = multer.diskStorage({
+        destination: (req, file, cb) => {
+          const directory = req.body.directory || 'general';
+          const directoryPath = `${uploadDir}/${directory}`;
+          
+          // 创建目录（如果不存在）
+          if (!fs.existsSync(directoryPath)) {
+            fs.mkdirSync(directoryPath, { recursive: true });
+            console.log(`创建目录: ${directoryPath}`);
+          }
+          cb(null, directoryPath);
+        },
+        filename: (req, file, cb) => {
+          // 生成唯一的文件名
+          const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+          const extension = file.originalname.split('.').pop() || 'jpg';
+          let filename = `${timestamp}.${extension}`;
+          
+          // 如果提供了车牌号，添加到文件名
+          if (req.body.licensePlate) {
+            filename = `${timestamp}_${req.body.licensePlate.replace(/\s+/g, '_')}.${extension}`;
+          }
+          
+          cb(null, filename);
+        }
       });
       
-      // 打印上传信息到控制台
-      console.log(`照片已上传: ${fullPath}`);
-      console.log(`文件命名格式: ${uniqueFilename}`);
-      console.log(`存储目录: ${directory}`);
+      // 文件过滤 - 只允许图片
+      const fileFilter = (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+          cb(null, true);
+        } else {
+          cb(new Error('只允许上传图片文件'), false);
+        }
+      };
       
-      res.json({ url: photoUrl, filename: uniqueFilename, directory: fullPath });
+      // 配置multer
+      const upload = multer({ 
+        storage: storage,
+        limits: {
+          fileSize: 10 * 1024 * 1024, // 增加限制到10MB以适应高质量图片
+        },
+        fileFilter: fileFilter
+      }).single('file');
+      
+      // 处理上传
+      upload(req, res, async (err) => {
+        if (err) {
+          console.error('文件上传错误:', err);
+          return res.status(400).json({ message: err.message });
+        }
+        
+        // 验证文件是否上传成功
+        if (!req.file) {
+          return res.status(400).json({ message: '未收到上传文件' });
+        }
+        
+        // 构建完整路径和URL
+        const fullPath = req.file.path;
+        
+        // 构建正确的文件URL - 修复URL构建逻辑
+        // 获取相对于项目根目录的相对路径
+        const relativePath = fullPath.replace(/\\/g, '/').replace(__dirname + '/', '');
+        // 确保路径以/uploads/开头
+        const fileUrl = `/${relativePath}`;
+        
+        // 记录文件上传日志
+        await SystemLog.create({
+          userId: req.user.id,
+          action: 'upload',
+          entityType: 'file',
+          entityId: req.file.filename,
+          details: { 
+            directory: req.body.directory, 
+            filename: req.file.filename,
+            size: req.file.size,
+            mimetype: req.file.mimetype,
+            path: fullPath,
+            url: fileUrl
+          },
+          ipAddress: req.ip
+        });
+        
+        console.log(`文件已上传: ${fullPath}`);
+        console.log(`生成的文件URL: ${fileUrl}`);
+        
+        // 返回文件信息
+        res.json({
+          url: fileUrl,
+          filename: req.file.filename,
+          path: fullPath,
+          size: req.file.size,
+          mimetype: req.file.mimetype
+        });
+      });
     } catch (error) {
       console.error('文件上传错误:', error);
-      res.status(500).json({ message: '服务器错误' });
+      res.status(500).json({ message: '服务器错误: ' + error.message });
     }
   });
 

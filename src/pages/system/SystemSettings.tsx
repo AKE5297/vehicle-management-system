@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useThemeContext } from '../../contexts/ThemeContext';
 import { useTheme } from '../../hooks/useTheme';
 import { cn } from '../../lib/utils';
-import Button from '../../components/ui/Button';
+import { Button } from '../../components/ui/Button';
 
 // System settings page
 const SystemSettings = () => {

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { mockService } from '../../services/mockService';
 import { User } from '../../types';
 import { toast } from 'sonner';
-import Button from '../../components/ui/Button';
+import { Button } from '../../components/ui/Button';
 import { cn } from '../../lib/utils';
 
 // User management page

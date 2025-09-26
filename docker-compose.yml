@@ -12,7 +12,7 @@ services:
       - ./:/app
       - ./uploads:/app/uploads
     environment:
-      - MONGODB_URI=mongodb://db:27017/vehicle-management
+       - MONGODB_URI=mongodb://admin:password@db:27017/vehicle-management?authSource=admin
       - JWT_SECRET=your-secret-key
       - UPLOAD_DIR=/app/uploads
       - PORT=5000
@@ -20,8 +20,11 @@ services:
       - db
     command: sh -c "git clone https://github.com/AKE5297/vehicle-management-system.git /app && cd /app && npm install -g pnpm && pnpm install && pnpm build && pnpm start"
     
-  db:
-    image: mongo:latest
+   db:
+     image: mongo:latest
+     environment:
+       - MONGO_INITDB_ROOT_USERNAME=admin
+       - MONGO_INITDB_ROOT_PASSWORD=password
     container_name: vehicle-management-db
     volumes:
       - ./mongodb-data:/data/db

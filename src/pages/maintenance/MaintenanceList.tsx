@@ -4,7 +4,7 @@ import { mockService } from '../../services/mockService';
 import { MaintenanceRecord } from '../../types';
 import { cn } from '../../lib/utils';
 import { toast } from 'sonner';
-import Button from '../../components/ui/Button';
+import { Button } from '../../components/ui/Button';
 
 // Maintenance list page with complete CRUD operations
 const MaintenanceList = () => {

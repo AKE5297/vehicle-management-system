@@ -156,16 +156,20 @@ const VehicleDetail = () => {
              {vehicle.photos && vehicle.photos.length > 0 ? (
               vehicle.photos.map((photo, index) => (
                 <div key={index} className="relative rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 aspect-video">
-                  <img
-                    src={photo}
-                    alt={`${vehicle.licensePlate} - 照片 ${index + 1}`}
-                    className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
-                    onError={(e) => {
-                      // 图片加载失败时显示默认图标
-                      const target = e.target as HTMLImageElement;
-                      target.src = "https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=Car%20placeholder%20image&sign=046ca8763b5b7acb3a4ab7a4d8df730b";
-                    }}
-                  />
+                   <img
+                      src={photo}
+                      alt={`${vehicle.licensePlate} - 照片 ${index + 1}`}
+                      className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                      onError={(e) => {
+                        // 图片加载失败时显示默认图标
+                        const target = e.target as HTMLImageElement;
+                        console.error(`图片加载失败: ${photo}`);
+                        // 生成更具体的占位图
+                        const vehicleType = formatVehicleType(vehicle.vehicleType);
+                        const prompt = `Car%20${vehicleType}%20${vehicle.brand}%20${vehicle.model}%20placeholder%20image`;
+                        target.src = `https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=${prompt}`;
+                      }}
+                    />
                 </div>
               ))
             ) : (

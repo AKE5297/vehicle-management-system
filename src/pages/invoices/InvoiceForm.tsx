@@ -151,20 +151,12 @@ const InvoiceForm = () => {
   const handlePhotoUpload = async (urls: string[]) => {
     if (urls.length > 0) {
       try {
-        // 创建目录结构（如果不存在）
-        photoService.createDirectoryStructure();
-        
-        // 使用photoService保存照片
-        const directory = photoService.getDirectory('INVOICE_PHOTOS');
-        const formattedUrl = await photoService.savePhoto(urls[0], directory, {
-          licensePlate: formData.vehicleLicensePlate
-        });
-        
-        setFormData(prev => ({ ...prev, photo: formattedUrl }));
+        // 直接使用上传器返回的URL，因为已经通过photoService处理过了
+        setFormData(prev => ({ ...prev, photo: urls[0] }));
         toast.success('发票照片上传成功');
       } catch (error) {
-        console.error('Error uploading invoice photo:', error);
-        toast.error('发票照片上传失败，请重试');
+        console.error('Error setting invoice photo:', error);
+        toast.error('发票照片处理失败，请重试');
       }
     }
   };

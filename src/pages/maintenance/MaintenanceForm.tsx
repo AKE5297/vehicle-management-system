@@ -100,22 +100,12 @@ const MaintenanceForm = () => {
    // Handle photo upload for maintenance process
   const handlePhotosUpload = async (urls: string[]) => {
     try {
-      // 创建目录结构（如果不存在）
-      photoService.createDirectoryStructure();
-      
-      // 使用photoService保存照片
-      const directory = photoService.getDirectory('MAINTENANCE_PHOTOS');
-      const formattedUrls = await Promise.all(
-        urls.map(url => photoService.savePhoto(url, directory, {
-          licensePlate: formData.vehicleLicensePlate
-        }))
-      );
-      
-      setFormData(prev => ({ ...prev, photos: formattedUrls }));
+      // 直接使用上传器返回的URL，因为已经通过photoService处理过了
+      setFormData(prev => ({ ...prev, photos: urls }));
       toast.success(`成功上传${urls.length}张维修照片`);
     } catch (error) {
-      console.error('Error uploading maintenance photos:', error);
-      toast.error('维修照片上传失败，请重试');
+      console.error('Error setting maintenance photos:', error);
+      toast.error('维修照片处理失败，请重试');
     }
   };
   
@@ -125,24 +115,18 @@ const MaintenanceForm = () => {
     return photoService.savePhoto(file, directory);
   };
   
-   // Handle part photo upload
+  // Handle part photo upload
   const handlePartPhotoUpload = async (index: number, urls: string[]) => {
     if (urls.length > 0) {
       try {
-        // 创建目录结构（如果不存在）
-        photoService.createDirectoryStructure();
-        
-        // 使用photoService保存照片
-        const directory = photoService.getDirectory('PART_PHOTOS');
-        const formattedUrl = await photoService.savePhoto(urls[0], directory);
-        
+        // 直接使用上传器返回的URL，因为已经通过photoService处理过了
         const newParts = [...formData.parts];
-        newParts[index] = { ...newParts[index], photo: formattedUrl };
+        newParts[index] = { ...newParts[index], photo: urls[0] };
         setFormData(prev => ({ ...prev, parts: newParts }));
         toast.success('配件照片上传成功');
       } catch (error) {
-        console.error('Error uploading part photo:', error);
-        toast.error('配件照片上传失败，请重试');
+        console.error('Error setting part photo:', error);
+        toast.error('配件照片处理失败，请重试');
       }
     }
   };

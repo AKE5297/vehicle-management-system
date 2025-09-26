@@ -1,504 +1,140 @@
-# 车辆管理系统 - Vehicle Management System
+# 车辆管理系统
 
-一个基于 React、TypeScript 和 Node.js 的现代化车辆管理系统，支持车辆信息管理、维修记录、发票管理和数据导出等功能。
+一个功能完善的车辆管理系统，支持车辆信息管理、维修记录、保险理赔和数据统计等功能。
 
-## 功能特性
+## 功能特点
 
-- 🚗 **车辆管理**: 支持添加、编辑、删除和查看车辆信息
-- 🛠️ **维修记录**: 记录维修工单、配件信息和维修过程
-- 🧾 **发票管理**: 管理车辆服务相关发票，支持OCR识别
-- 📊 **数据分析**: 提供车辆统计和服务分析
-- 💾 **数据导出**: 支持导出Excel、CSV和JSON格式数据
-- 🔒 **用户权限**: 支持不同角色的用户权限管理
-- 🌓 **主题切换**: 支持明暗主题，提升用户体验
-- 📱 **响应式设计**: 适配桌面和移动设备
+- 完整的车辆生命周期管理
+- 维修记录和配件管理
+- 保险理赔流程跟踪
+- 数据导出和报表生成
+- 用户权限管理
+- 响应式设计，支持移动端访问
 
-## 技术栈
+## 部署指南
 
-- **前端**: React 18+、TypeScript、Tailwind CSS、React Router
-- **后端**: Node.js、Express、MongoDB
-- **工具**: Vite、ESLint、Prettier
+### Docker Compose 部署
 
-## 目录结构
-
-```
-├── src/                # 前端源码
-│   ├── components/     # 通用组件
-│   ├── contexts/       # 上下文管理
-│   ├── hooks/          # 自定义钩子
-│   ├── pages/          # 页面组件
-│   ├── services/       # 服务层
-│   ├── types/          # 类型定义
-│   └── App.tsx         # 应用入口
-├── server.js           # 后端服务器
-├── package.json        # 项目依赖
-└── README.md           # 项目说明
-```
-
-## 部署教程
-
-### 1. 本地部署
-
-#### 前置条件
-- Node.js 16+
-- npm/pnpm/yarn
-- MongoDB (v5.0+)
-
-#### MongoDB 安装与配置
-
-##### 方法 1: 本地安装 MongoDB
-
-**Windows 安装:**
-1. 访问 [MongoDB 官网](https://www.mongodb.com/try/download/community) 下载适合的版本
-2. 运行安装程序，选择 "Complete" 安装
-3. 安装完成后，MongoDB 服务通常会自动启动
-
-**macOS 安装:**
-```bash
-# 使用 Homebrew
-brew tap mongodb/brew
-brew install mongodb-community@5.0
-brew services start mongodb-community
-```
-
-**Linux 安装 (Ubuntu/Debian):**
-```bash
-# 导入 MongoDB 公钥
-wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | sudo apt-key add -
-
-# 添加 MongoDB 仓库
-echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | sudo tee /etc/apt/sources.list.d/mongodb-org-5.0.list
-
-# 安装 MongoDB
-sudo apt update
-sudo apt install -y mongodb-org
-
-# 启动 MongoDB 服务
-sudo systemctl start mongod
-sudo systemctl enable mongod  # 设置开机自启
-```
-
-##### 方法 2: Docker 安装 MongoDB
-```bash
-# 拉取 MongoDB 镜像
-docker pull mongo:latest
-
-# 启动 MongoDB 容器
-docker run -d -p 27017:27017 --name mongodb -v mongodb_data:/data/db mongo
-```
-
-##### MongoDB 基本配置
-
-1. 连接 MongoDB 并创建数据库:
-```bash
-# 打开 MongoDB Shell
-mongo
-
-# 创建数据库
-use vehicle-management
-
-# 创建用户并授权
-db.createUser({
-  user: "vehicleAdmin",
-  pwd: "your-strong-password",
-  roles: [{ role: "readWrite", db: "vehicle-management" }]
-})
-
-# 退出 Shell
-exit
-```
-
-2. 带认证的连接字符串格式:
-```
-mongodb://vehicleAdmin:your-strong-password@localhost:27017/vehicle-management?authSource=vehicle-management
-```
-
-#### 安装步骤
-
-1. 克隆项目
+1. 克隆项目仓库:
 ```bash
 git clone https://github.com/AKE5297/vehicle-management-system.git
 cd vehicle-management-system
 ```
 
-2. 安装依赖
+2. 使用Docker Compose启动服务:
 ```bash
-pnpm install
+docker-compose up -d
 ```
 
-3. 创建环境变量文件 `.env`
-```env
-# MongoDB 连接字符串
-# 基本连接 (无认证)
-# MONGODB_URI=mongodb://localhost:27017/vehicle-management
-
-# 带认证的连接字符串示例
-MONGODB_URI=mongodb://vehicleAdmin:your-strong-password@localhost:27017/vehicle-management?authSource=vehicle-management
-
-# JWT 密钥
-MONGODB_URI=mongodb://localhost:27017/vehicle-management
-
-# JWT 密钥
-JWT_SECRET=your-secret-key
-
-# 上传目录
-UPLOAD_DIR=uploads
-
-# 端口
-PORT=5000
+3. 访问系统:
+```
+http://localhost:3000
 ```
 
-4. 创建照片目录
-```bash
-mkdir uploads
-mkdir -p uploads/vehicle_photos uploads/entry_photos uploads/exit_photos uploads/maintenance_photos uploads/invoice_photos uploads/part_photos uploads/note_photos
+### Cloudflare Pages 部署
+
+1. 确保项目包含正确的构建脚本:
+```json
+"scripts": {
+  "build": "vite build --outDir dist"
+}
 ```
 
-5. 运行项目
-```bash
-pnpm dev  # 开发模式
-# 或
-pnpm build && pnpm start  # 生产模式
+2. 在Cloudflare Pages中创建新项目，关联GitHub仓库
+
+3. 设置构建命令:
+```
+pnpm build
 ```
 
-### 2. NAS 部署 (群晖 Synology / 飞牛 OS)
+4. 设置输出目录:
+```
+dist
+```
 
-#### 群晖 Synology
+5. 部署完成后访问分配的URL
 
-1. **安装 Docker 套件**
-   - 在 DSM 控制台中打开 "套件中心"
-   - 搜索并安装 "Docker" 套件
+## MongoDB 配置指南
 
-2. **创建项目目录**
-   - 在 File Station 中创建目录结构：`/volume1/docker/vehicle-management/`
-   - 在该目录下创建 `uploads` 和 `mongodb-data` 子目录
+### 基本配置
 
-3. **准备配置文件**
-   - 在 `vehicle-management` 目录下创建 `docker-compose.yml` 文件，内容如下：
+MongoDB连接信息在`docker-compose.yml`文件中配置:
+
 ```yaml
-version: '3.8'
-
-services:
-  app:
-    image: node:18-alpine
-    container_name: vehicle-management-app
-    working_dir: /app
-    ports:
-      - "3000:3000"
-      - "5000:5000"
-    volumes:
-      - ./:/app
-      - ./uploads:/app/uploads
-    environment:
-      - MONGODB_URI=mongodb://db:27017/vehicle-management
-      - JWT_SECRET=your-secret-key
-      - UPLOAD_DIR=/app/uploads
-      - PORT=5000
-    depends_on:
-      - db
-    command: sh -c "git clone https://github.com/AKE5297/vehicle-management-system.git /app && cd /app && npm install -g pnpm && pnpm install && pnpm build && pnpm start"
-    
-  db:
-    image: mongo:latest
-    container_name: vehicle-management-db
-    volumes:
-      - ./mongodb-data:/data/db
-    ports:
-      - "27017:27017"
-    restart: always
+environment:
+  - MONGODB_URI=mongodb://admin:password@db:27017/vehicle-management?authSource=admin
 ```
 
-4. **通过 SSH 连接到 NAS**
-   - 打开 DSM 控制面板，启用 SSH 服务
-   - 使用终端连接：`ssh admin@your-nas-ip`
+### 带认证的连接字符串获取
 
-5. **启动服务**
-   ```bash
-   cd /volume1/docker/vehicle-management
-   docker-compose up -d
-   ```
-
-6. **配置照片目录权限**
-   ```bash
-   chmod -R 777 ./uploads
-   ```
-
-7. **访问系统**
-   - 打开浏览器，访问 `http://your-nas-ip:3000`
-
-#### 飞牛 OS (FeiNiu OS)
-
-1. **安装容器管理应用**
-   - 在飞牛 OS 应用商店中搜索并安装 "Docker 管理器"
-
-2. **创建项目目录**
-   - 在 "文件管理" 中创建 `vehicle-management` 目录
-
-3. **使用 Docker Compose 部署**
-   - 创建与群晖相同的 `docker-compose.yml` 文件
-   - 通过 Docker 管理器导入并启动
-
-4. **设置开机自启**
-   - 在容器设置中启用 "开机自启" 选项
-
-### 3. Linux 服务器部署
-
-#### 前置条件
-- Ubuntu/Debian/CentOS 服务器
-- Node.js 16+
-- Docker (推荐) 或 MongoDB 服务
-
-#### Docker 部署
-
-1. **安装 Docker 和 Docker Compose**
-   ```bash
-   # Ubuntu/Debian
-   apt update && apt install docker.io docker-compose -y
-   
-   # CentOS
-   yum install docker docker-compose -y
-   systemctl start docker
-   systemctl enable docker
-   ```
-
-2. **创建项目目录**
-   ```bash
-   mkdir -p /opt/vehicle-management
-   cd /opt/vehicle-management
-   ```
-
-3. **创建 docker-compose.yml**
-   ```yaml
-   version: '3.8'
-   
-   services:
-     app:
-       image: node:18-alpine
-       container_name: vehicle-management-app
-       working_dir: /app
-       ports:
-         - "80:3000"  # 直接使用80端口
-         - "5000:5000"
-       volumes:
-         - ./:/app
-         - ./uploads:/app/uploads
-       environment:
-         - MONGODB_URI=mongodb://db:27017/vehicle-management
-         - JWT_SECRET=your-secret-key
-         - UPLOAD_DIR=/app/uploads
-         - PORT=5000
-       depends_on:
-         - db
-       restart: unless-stopped
-       command: sh -c "git clone https://github.com/AKE5297/vehicle-management-system.git /app && cd /app && npm install -g pnpm && pnpm install && pnpm build && pnpm start"
-       
-     db:
-       image: mongo:latest
-       container_name: vehicle-management-db
-       volumes:
-         - ./mongodb-data:/data/db
-       restart: unless-stopped
-   ```
-
-4. **启动服务**
-   ```bash
-   docker-compose up -d
-   ```
-
-5. **配置防火墙**
-   ```bash
-   # Ubuntu/Debian
-   ufw allow 80
-   ufw allow 443
-   
-   # CentOS
-   firewall-cmd --permanent --add-port=80/tcp
-   firewall-cmd --permanent --add-port=443/tcp
-   firewall-cmd --reload
-   ```
-
-#### 手动部署 (无 Docker)
-
-1. **安装依赖**
-   ```bash
-   apt update
-   apt install nodejs npm mongodb -y
-   npm install -g pnpm
-   ```
-
-2. **配置 MongoDB**
-   ```bash
-   systemctl start mongodb
-   systemctl enable mongodb
-   ```
-
-3. **克隆项目**
-   ```bash
-   git clone https://github.com/AKE5297/vehicle-management-system.git /opt/vehicle-management
-   cd /opt/vehicle-management
-   ```
-
-4. **安装项目依赖**
-   ```bash
-   pnpm install
-   ```
-
-5. **创建环境变量**
-   ```bash
-   echo 'MONGODB_URI=mongodb://localhost:27017/vehicle-management' >> .env
-   echo 'JWT_SECRET=your-secret-key' >> .env
-   echo 'UPLOAD_DIR=uploads' >> .env
-   echo 'PORT=5000' >> .env
-   ```
-
-6. **创建照片目录**
-   ```bash
-   mkdir -p uploads/vehicle_photos uploads/entry_photos uploads/exit_photos uploads/maintenance_photos uploads/invoice_photos uploads/part_photos uploads/note_photos
-   chmod -R 777 uploads
-   ```
-
-7. **构建项目**
-   ```bash
-   pnpm build
-   ```
-
-8. **使用 PM2 管理进程**
-   ```bash
-   npm install -g pm2
-   pm2 start pnpm --name "vehicle-management" -- start
-   pm2 startup
-   pm2 save
-   ```
-
-### 4. GitHub Pages 部署
-
-GitHub Pages 仅支持静态网站部署，此项目包含后端服务，因此需要使用 Vercel、Netlify 等支持全栈应用的平台，或者只部署前端部分并连接到远程后端。
-
-#### 前端部署 + 远程后端
-
-1. **构建前端**
-   ```bash
-   pnpm build:client
-   ```
-
-2. **配置 API 地址**
-   - 在 `src/services/mockService.ts` 中修改 `API_BASE_URL` 为您的后端服务地址
-
-3. **部署到 GitHub Pages**
-   ```bash
-   npm install -g gh-pages
-   gh-pages -d dist/static
-   ```
-
-4. **设置自定义域名 (可选)**
-   - 在 GitHub 仓库设置中配置自定义域名
-
-### 5. Cloudflare Pages 部署
-
-Cloudflare Pages 支持静态网站和部分无服务器功能，但对于完整的全栈应用，您需要将后端部署到其他服务。下面是前端部署到 Cloudflare Pages 的方法：
-
-#### 前端部署 + 远程后端
-
-1. **登录 Cloudflare 账户**
-   - 访问 [Cloudflare Dashboard](https://dash.cloudflare.com/)
-   - 选择 "Pages" 选项卡
-
-2. **创建新项目**
-   - 连接您的 GitHub 仓库：https://github.com/AKE5297/vehicle-management-system
-   - 配置构建设置：
-     - 构建命令: `pnpm build:client`
-     - 构建输出目录: `dist/static`
-     - 环境变量:
-       - `NODE_VERSION`: 18
-       - `VITE_API_BASE_URL`: `https://your-backend-api.com/api`
-       - `VITE_USE_REAL_API`: `true`
-
-3. **部署**
-   - 点击 "Save and Deploy" 开始部署过程
-
-4. **配置自定义域名 (可选)**
-   - 在 Pages 设置中配置自定义域名
-
-#### 配置远程后端
-
-由于 Cloudflare Pages 主要用于静态内容部署，您需要将后端部署到其他支持 Node.js 的平台，如:
-
-- Cloudflare Workers
-- Vercel Serverless Functions
-- AWS Lambda
-- Google Cloud Functions
-- 自建服务器
-
-在前端部署完成后，确保在 Cloudflare Pages 设置中正确配置了 `VITE_API_BASE_URL` 环境变量，指向您的后端服务地址。
-
-### 6. 使用 docker-compose.yml 一键部署
-
-如果您的环境已安装 Docker 和 Docker Compose，可以直接使用项目根目录下的 `docker-compose.yml` 文件进行一键部署：
-
-1. **创建项目目录**
-   ```bash
-   mkdir vehicle-management && cd vehicle-management
-   ```
-
-2. **创建 docker-compose.yml 文件**
-   ```bash
-   nano docker-compose.yml
-   ```
-   复制项目根目录中的 docker-compose.yml 内容并保存
-
-3. **启动服务**
-   ```bash
-   docker-compose up -d
-   ```
-
-4. **等待部署完成**
-   - 首次启动时需要拉取代码和依赖，时间会稍长
-   - 可以通过 `docker logs vehicle-management-app` 查看部署进度
-
-5. **访问系统**
-   - 打开浏览器，访问 `http://localhost:3000`
-
-## 默认账户
-
-系统启动后，会自动创建默认管理员账户：
-- 用户名: `admin`
-- 密码: `admin123`
-
-请登录后及时修改密码。
-
-## 照片文件存储结构
-
-系统使用以下目录结构存储不同类型的照片：
-
+1. 连接字符串格式:
 ```
-uploads/
-├── vehicle_photos/      # 车辆基本照片
-├── entry_photos/        # 车辆进场照片
-├── exit_photos/         # 车辆离场照片
-├── maintenance_photos/  # 维修过程照片
-├── invoice_photos/      # 发票照片
-├── part_photos/         # 配件照片
-└── note_photos/         # 备注照片
+mongodb://用户名:密码@主机:端口/数据库名?authSource=admin
 ```
 
-文件名格式：`时间戳_车牌号_车辆ID_目录类型.扩展名`
+2. 在项目中，连接字符串位于`docker-compose.yml`的`MONGODB_URI`环境变量中
+
+3. 默认管理员凭据(可在docker-compose.yml中修改):
+   - 用户名: admin
+   - 密码: password
+   - 数据库: vehicle-management
+   - 认证源: admin
+
+### 手动连接MongoDB
+
+使用MongoDB客户端连接:
+```bash
+mongosh "mongodb://admin:password@localhost:27017/vehicle-management?authSource=admin"
+```
+
+### 备份与恢复
+
+备份数据库:
+```bash
+docker exec vehicle-management-db mongodump --username admin --password password --authenticationDatabase admin --db vehicle-management --out /data/backup
+```
+
+恢复数据库:
+```bash
+docker exec vehicle-management-db mongorestore --username admin --password password --authenticationDatabase admin /data/backup/vehicle-management
+```
+
+## 使用说明
+
+### 默认账号
+
+- 管理员账号: admin/admin123
+- 普通用户: user1/user123
+
+### 主要功能模块
+
+1. 车辆管理 - 添加和维护车辆信息
+2. 维修记录 - 记录维修详情和配件使用
+3. 发票管理 - 管理维修和保险发票
+4. 数据管理 - 导出系统数据
+5. 系统设置 - 配置系统参数和用户权限
 
 ## 常见问题
 
-1. **照片上传后不显示**
-   - 检查上传目录权限是否正确设置
-   - 确认照片存储路径配置正确
+### 图片上传失败
 
-2. **数据库连接失败**
-   - 检查 MongoDB 服务是否运行: `systemctl status mongod` 或 `docker ps | grep mongodb`
-   - 验证连接字符串是否正确，特别是认证信息
-   - 确认 MongoDB 用户权限设置正确
-   - 检查防火墙是否允许访问 27017 端口
+1. 检查文件大小是否超过限制(默认1024KB)
+2. 确认文件格式是否为JPG或PNG
+3. 检查服务器存储空间是否充足
+4. 查看浏览器控制台网络请求错误信息
 
-3. **部署到子路径后路由问题**
-   - 在 Vite 配置中设置 `base` 选项
-   - 调整 React Router 路由配置
+### MongoDB连接问题
 
-## License
+1. 确认MongoDB服务是否正常运行
+2. 检查连接字符串格式是否正确
+3. 验证数据库认证凭据
+4. 确认网络是否允许连接MongoDB端口
 
-MIT
+## 技术栈
+
+- React 18
+- TypeScript
+- Node.js & Express
+- MongoDB
+- Docker & Docker Compose
+- Tailwind CSS

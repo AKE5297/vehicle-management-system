@@ -4,7 +4,7 @@ import { mockService } from '../../services/mockService';
 import { Vehicle } from '../../types';
 import { cn } from '../../lib/utils';
 import { toast } from 'sonner';
-import Button from '../../components/ui/Button';
+import { Button } from '../../components/ui/Button';
 
 // Vehicle list page with search, filter and pagination
 const VehicleList = () => {

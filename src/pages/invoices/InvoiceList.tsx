@@ -4,7 +4,7 @@ import { mockService } from '../../services/mockService';
 import { Invoice } from '../../types';
 import { cn } from '../../lib/utils';
 import { toast } from 'sonner';
-import Button from '../../components/ui/Button';
+import { Button } from '../../components/ui/Button';
 
 // Invoice list page with complete CRUD operations
 const InvoiceList = () => {
