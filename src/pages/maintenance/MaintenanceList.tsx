@@ -120,14 +120,14 @@ const MaintenanceList = () => {
           </div>
         ) : (
           <>
-            {/* Table header */}
-            <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-sm font-medium text-gray-500 dark:text-gray-400">
-              <div className="col-span-2">工单编号</div>
-              <div className="col-span-2">车辆信息</div>
-              <div className="col-span-2">进厂时间</div>
-              <div className="col-span-2">出厂时间</div>
-              <div className="col-span-2">维修类型</div>
-              <div className="col-span-2 text-right">操作</div>
+             {/* Table header */}
+            <div className="hidden md:grid grid-cols-12 gap-0 px-6 py-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-sm font-medium text-gray-500 dark:text-gray-400 data-table">
+              <div className="col-span-2 data-table-cell">工单编号</div>
+              <div className="col-span-2 data-table-cell">车辆信息</div>
+              <div className="col-span-2 data-table-cell">进厂时间</div>
+              <div className="col-span-2 data-table-cell">出厂时间</div>
+              <div className="col-span-2 data-table-cell">维修类型</div>
+              <div className="col-span-2 data-table-cell text-right">操作</div>
             </div>
             
             {/* Table rows */}
@@ -182,16 +182,16 @@ const MaintenanceList = () => {
                     </div>
                   </div>
                   
-                  {/* Desktop view */}
-                  <div className="hidden md:flex items-center px-6 py-4">
-                    <div className="col-span-2 font-medium text-gray-900 dark:text-white">工单 #{record.id}</div>
-                    <div className="col-span-2 text-sm text-gray-500 dark:text-gray-400">车辆 #{record.vehicleId}</div>
-                    <div className="col-span-2 text-sm text-gray-500 dark:text-gray-400">{formatDate(record.entryTime)}</div>
-                    <div className="col-span-2 text-sm text-gray-500 dark:text-gray-400">{record.exitTime ? formatDate(record.exitTime) : '-'}</div>
-                    <div className="col-span-2 text-sm text-gray-500 dark:text-gray-400">
+                   {/* Desktop view */}
+                  <div className="hidden md:grid grid-cols-12 items-center px-6 py-4 divide-y dark:divide-gray-700">
+                    <div className="col-span-2 data-table-cell">工单 #{record.id}</div>
+                    <div className="col-span-2 data-table-cell">车辆 #{record.vehicleId}</div>
+                    <div className="col-span-2 data-table-cell">{formatDate(record.entryTime)}</div>
+                    <div className="col-span-2 data-table-cell">{record.exitTime ? formatDate(record.exitTime) : '-'}</div>
+                    <div className="col-span-2 data-table-cell">
                       {record.type === 'maintenance' ? '常规保养' : record.type === 'accident' ? '事故维修' : '故障维修'}
                     </div>
-                     <div className="col-span-2 flex justify-end space-x-3">
+                    <div className="col-span-2 data-table-cell flex justify-end space-x-3">
                       <button
                         onClick={() => navigate(`/maintenance/${record.id}`)}
                         className="inline-flex items-center px-3 py-1.5 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-200"

@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../contexts/authContext';
-import { mockService } from '../services/mockService';
 import { toast } from 'sonner';
+import { mockService } from '../services/mockService';
 import { useTheme } from '../hooks/useTheme';
 
-// Login page component
+// 登录页面组件
 const Login = () => {
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('admin123');
@@ -15,11 +15,11 @@ const Login = () => {
   const navigate = useNavigate();
   const { theme } = useTheme();
   
-  // Handle form submission
+  // 处理表单提交
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic validation
+    // 基本验证
     if (!username || !password) {
       toast.error('请输入用户名和密码');
       return;
@@ -28,44 +28,43 @@ const Login = () => {
     setLoading(true);
     
     try {
-      // Attempt login through mock service
-      // 添加第三个参数{useMock: true}强制使用模拟数据
+      // 使用模拟服务进行登录
       const user = await mockService.login(username, password, {useMock: true});
       
       if (user) {
-        // Set authentication state
+        // 设置认证状态
         setIsAuthenticated(true);
         
-        // Store user data in localStorage
+        // 保存用户数据到本地存储
         localStorage.setItem('currentUser', JSON.stringify(user));
         
-        // If user has a token, store it separately
+        // 如果用户有令牌，单独存储
         if (user.token) {
           localStorage.setItem('authToken', user.token);
         }
         
-        // Show success message
+        // 显示成功消息
         toast.success('登录成功，欢迎回来！');
         
-        // Redirect to dashboard
+        // 重定向到仪表板
         navigate('/');
       } else {
-        // Show error message for invalid credentials
+        // 显示无效凭据错误
         toast.error('用户名或密码不正确，请重试');
       }
     } catch (error) {
-      // Show error message for login failure
+      // 显示登录失败错误
       toast.error('登录失败，请稍后重试');
       console.error('Login error:', error);
     } finally {
-      // 确保无论如何都会设置loading为false，防止一直显示"登录中"
+      // 确保无论如何都会设置loading为false
       setTimeout(() => {
         setLoading(false);
-      }, 2000); // 最多显示2秒的登录状态
+      }, 2000);
     }
   };
   
-  // 初始化模拟数据（仅在首次加载时）
+  // 初始化检查
   useEffect(() => {
     // 检查是否已有用户数据
     const checkInitialization = async () => {
@@ -73,7 +72,6 @@ const Login = () => {
         const users = await mockService.getUsers();
         if (users.length === 0) {
           console.log('初始化模拟数据...');
-          // 这里可以添加初始化模拟数据的逻辑
         }
       } catch (error) {
         console.error('初始化检查失败:', error);
@@ -86,24 +84,40 @@ const Login = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4">
       <div className="w-full max-w-md">
-        <div className={`bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transition-all duration-300 transform hover:shadow-2xl`}>
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden transition-all duration-300 transform hover:shadow-2xl">
           <div className="p-6 md:p-8">
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="fa-solid fa-car-side text-white text-2xl"></i>
+              {/* 网站Logo和名称 */}
+              <div className="flex flex-col items-center">
+                {localStorage.getItem('siteSettings') && JSON.parse(localStorage.getItem('siteSettings') || '{}').logo ? (
+                  <div className="mb-4">
+                    <img 
+                      src={JSON.parse(localStorage.getItem('siteSettings') || '{}').logo} 
+                      alt="网站Logo" 
+                      className="w-16 h-16 object-contain"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-4">
+                    <i className="fa-solid fa-car-side text-white text-2xl"></i>
+                  </div>
+                )}
+                <h2 className="text-2xl font-bold">
+                  {localStorage.getItem('siteSettings') ? JSON.parse(localStorage.getItem('siteSettings') || '{}').siteName : '车辆管理系统'}
+                </h2>
+                <p className="mt-2">请登录您的账户</p>
               </div>
-              <h2 className="text-2xl font-bold text-gray-800 dark:text-white">车辆管理系统</h2>
-              <p className="text-gray-500 dark:text-gray-400 mt-1">请登录您的账户</p>
             </div>
             
+            {/* 登录表单 */}
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label htmlFor="username" className="block text-sm font-medium mb-1">
                   用户名
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i className="fa-solid fa-user text-gray-400"></i>
+                    <i className="fa-solid fa-user"></i>
                   </div>
                   <input
                     type="text"
@@ -111,19 +125,19 @@ const Login = () => {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     disabled={loading}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition duration-200"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
                     placeholder="输入用户名"
                   />
                 </div>
               </div>
               
               <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label htmlFor="password" className="block text-sm font-medium mb-1">
                   密码
                 </label>
                 <div className="relative">
                   <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <i className="fa-solid fa-lock text-gray-400"></i>
+                    <i className="fa-solid fa-lock"></i>
                   </div>
                   <input
                     type="password"
@@ -131,7 +145,7 @@ const Login = () => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     disabled={loading}
-                    className="w-full pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white transition duration-200"
+                    className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg"
                     placeholder="输入密码"
                   />
                 </div>
@@ -157,19 +171,17 @@ const Login = () => {
               </button>
             </form>
             
-            <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            {/* 演示账号信息 */}
+            <div className="mt-6 text-center text-sm">
               <p>演示账号: admin / admin123</p>
               <p className="mt-1">普通用户: user1 / user123</p>
             </div>
           </div>
           
-          <div className={`p-4 text-center text-sm ${theme === 'dark' ? 'bg-gray-700 text-gray-300' : 'bg-gray-50 text-gray-600'}`}>
+          {/* 页脚 */}
+          <div className={`p-4 text-center text-sm bg-gray-50 dark:bg-gray-700`}>
             <p>© 2025 车辆管理系统 - 版权所有</p>
           </div>
-        </div>
-        
-        <div className="mt-6 text-center text-sm text-gray-500 dark:text-gray-400 animate-fade-in">
-          <p>使用先进的车辆管理解决方案，提升您的工作效率</p>
         </div>
       </div>
     </div>

@@ -8,6 +8,7 @@ import { cn } from '../lib/utils';
 import { isUsingRealAPI } from '../services/mockService';
 
 // Database connection status component
+import { useTheme } from '../hooks/useTheme';
 const ServerStatus: React.FC = () => {
   const [status, setStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking');
   const [dbStatus, setDbStatus] = useState<'connected' | 'disconnected' | 'checking'>('checking');
@@ -82,7 +83,6 @@ const ServerStatus: React.FC = () => {
   );
 };
 
-// Dashboard home page
 const Home = () => {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -231,32 +231,32 @@ const Home = () => {
       </div>
       
       {/* Statistics cards */}
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
-             {statsCards.map((card, index) => (
-               <motion.div 
-                 key={index}
-                 initial={{ opacity: 0, y: 20 }}
-                 animate={{ opacity: 1, y: 0 }}
-                 transition={{ delay: index * 0.1 }}
-                 className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
-               >
-                 <div className="p-4">
-                   <div className="flex items-start justify-between">
-                     <div>
-                       <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                         {card.title}
-                       </div>
-                       <div className="text-2xl font-bold mt-1 text-gray-800 dark:text-white">
-                         {card.value}
-                       </div>
-                     </div>
-                     <div className={cn("p-3 rounded-full", card.color)}>
-                       <i className={`fa-solid ${card.icon} text-xl`}></i>
-                     </div>
-                   </div>
-                 </div>
-               </motion.div>
-             ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+              {statsCards.map((card, index) => (
+                <motion.div 
+                  key={index}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="bg-white dark:bg-gray-800 rounded-xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1"
+                >
+                  <div className="p-6">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                          {card.title}
+                        </div>
+                        <div className="text-3xl font-bold mt-1 text-gray-800 dark:text-white">
+                          {card.value}
+                        </div>
+                      </div>
+                      <div className={cn("p-3 rounded-full", card.color)}>
+                        <i className={`fa-solid ${card.icon} text-xl`}></i>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
            </div>
       
       {/* Charts and recent vehicles section */}

@@ -2,12 +2,13 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { mockService } from '../../services/mockService';
 import { cn } from '../../lib/utils';
+import { localDataService } from '../../services/localDataService';
 
-// Data export options
+  // Data export options
 const exportOptions = [
-  { id: 'vehicles', name: '车辆数据', description: '导出所有车辆基本信息和状态' },
-  { id: 'maintenance', name: '维修记录', description: '导出所有维修工单和配件信息' },
-  { id: 'invoices', name: '发票数据', description: '导出所有发票记录和金额统计' },
+  { id: 'vehicles', name: '车辆数据', description: '导出车辆照片、基本信息、时间记录和备注' },
+  { id: 'invoices', name: '发票数据', description: '导出发票图片、基本信息和发票项目' },
+  { id: 'maintenance', name: '维修记录', description: '导出维修时间信息、费用信息、配件信息和维修照片' },
   { id: 'all', name: '全部数据', description: '导出系统中所有数据' }
 ];
 
@@ -42,7 +43,8 @@ const DataManagement = () => {
   const [exportHistory, setExportHistory] = useState([
     { id: '1', type: '全部数据', format: 'Excel', date: '2025-09-05', status: 'success' },
     { id: '2', type: '维修记录', format: 'CSV', date: '2025-09-03', status: 'success' },
-    { id: '3', type: '车辆数据', format: 'Excel', date: '2025-08-28', status: 'failed' }
+    { id: '3', type: '车辆数据', format: 'PDF', date: '2025-08-28', status: 'success' },
+    { id: '4', type: '发票数据', format: 'JSON', date: '2025-08-25', status: 'failed' }
   ]);
 
   // Handle date range change
@@ -114,8 +116,7 @@ const DataManagement = () => {
     const { name, value } = e.target;
     setCustomDateRange(prev => ({ ...prev, [name]: value }));
   };
-
-  // Handle export data
+   // Handle export data
   const handleExport = async () => {
     // Validation
     if (selectedDateRange === 'custom' && (!customDateRange.startDate || !customDateRange.endDate)) {
@@ -128,42 +129,65 @@ const DataManagement = () => {
     try {
       // Get export name and format
       const exportType = exportOptions.find(opt => opt.id === selectedData)?.name || '数据';
-      const formatInfo = formatOptions.find(opt => opt.id === selectedFormat);
       
-      // Call mock service to export data
-      const exportUrl = await mockService.exportData(
-        selectedFormat as 'excel' | 'csv' | 'json',
-        { 
-          type: selectedData,
-          startDate: customDateRange.startDate,
-          endDate: customDateRange.endDate
-        }
-      );
+      // Get current date for filename
+      const dateStr = new Date().toISOString().split('T')[0];
+      
+      console.log(`开始导出数据，类型: ${selectedData}，格式: ${selectedFormat}`);
+      
+      // 调用统一的导出方法
+      const success = localDataService.exportDataAsFormat(selectedData, selectedFormat as 'json' | 'csv' | 'excel');
+      
+      // 验证导出是否成功
+      if (success !== false) {
+        // Update export history
+        setExportHistory(prev => [
+          { 
+            id: Date.now().toString(), 
+            type: exportType, 
+            format: formatOptions.find(opt => opt.id === selectedFormat)?.name.split(' ')[0] || '文件', 
+            date: dateStr, 
+            status: 'success' 
+          },
+          ...prev
+        ]);
 
-      // Create download link
-      const link = document.createElement('a');
-      link.href = exportUrl;
-      link.download = `${exportType}_${new Date().toISOString().split('T')[0]}.${selectedFormat}`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      // Update export history
+        toast.success(`成功导出${exportType}数据为${selectedFormat.toUpperCase()}格式`);
+        console.log(`成功导出${exportType}数据`);
+      } else {
+        // 导出返回false，标记为失败
+        setExportHistory(prev => [
+          { 
+            id: Date.now().toString(), 
+            type: exportType, 
+            format: formatOptions.find(opt => opt.id === selectedFormat)?.name.split(' ')[0] || '文件', 
+            date: dateStr, 
+            status: 'failed' 
+          },
+          ...prev
+        ]);
+        
+        toast.error(`导出${exportType}数据失败，请重试`);
+        console.error('导出失败，localDataService.exportDataAsFormat 返回 false');
+      }
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('数据导出失败，请重试');
+      
+      // 记录失败的导出历史
+      const exportType = exportOptions.find(opt => opt.id === selectedData)?.name || '数据';
+      const dateStr = new Date().toISOString().split('T')[0];
+      
       setExportHistory(prev => [
         { 
           id: Date.now().toString(), 
           type: exportType, 
-          format: formatInfo?.name.split(' ')[0] || '文件', 
-          date: new Date().toISOString().split('T')[0], 
-          status: 'success' 
+          format: formatOptions.find(opt => opt.id === selectedFormat)?.name.split(' ')[0] || '文件', 
+          date: dateStr, 
+          status: 'failed' 
         },
         ...prev
       ]);
-
-      toast.success(`成功导出${exportType}数据`);
-    } catch (error) {
-      toast.error('数据导出失败，请重试');
-      console.error('Export error:', error);
     } finally {
       setExporting(false);
     }
@@ -183,7 +207,7 @@ const DataManagement = () => {
       </div>
 
       {/* Export options card */}
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md">
         <div className="p-6">
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">数据导出</h2>
 
@@ -217,7 +241,7 @@ const DataManagement = () => {
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                 选择文件格式
               </label>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {formatOptions.map(option => (
                   <div 
                     key={option.id}
@@ -234,6 +258,9 @@ const DataManagement = () => {
                   </div>
                 ))}
               </div>
+              <p className="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                导出文件将包含完整的数据记录
+              </p>
             </div>
 
             {/* Date range selection */}

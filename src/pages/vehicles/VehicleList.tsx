@@ -216,15 +216,15 @@ const VehicleList = () => {
           </div>
         ) : (
           <>
-            {/* Table header */}
-            <div className="hidden md:grid grid-cols-12 gap-4 px-6 py-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-sm font-medium text-gray-500 dark:text-gray-400">
-              <div className="col-span-1">ID</div>
-              <div className="col-span-2">车牌号</div>
-              <div className="col-span-2">车辆信息</div>
-              <div className="col-span-2">进出场状态</div>
-              <div className="col-span-2">服务类型</div>
-              <div className="col-span-1">停留时间</div>
-              <div className="col-span-2 text-right">操作</div>
+             {/* Table header */}
+            <div className="hidden md:grid grid-cols-12 gap-0 px-6 py-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-sm font-medium text-gray-500 dark:text-gray-400 data-table">
+              <div className="col-span-1 data-table-cell">ID</div>
+              <div className="col-span-2 data-table-cell">车牌号</div>
+              <div className="col-span-2 data-table-cell">车辆信息</div>
+              <div className="col-span-2 data-table-cell">进出场状态</div>
+              <div className="col-span-2 data-table-cell">服务类型</div>
+              <div className="col-span-1 data-table-cell">停留时间</div>
+              <div className="col-span-2 data-table-cell text-right">操作</div>
             </div>
             
             {/* Table rows */}
@@ -292,17 +292,21 @@ const VehicleList = () => {
                   </div>
                   
                   {/* Desktop view */}
-                  <div className="hidden md:flex items-center px-6 py-4">
-                    <div className="col-span-1 text-sm text-gray-500 dark:text-gray-400">{vehicle.id.substring(0, 8)}</div>
+                   <div className="hidden md:grid grid-cols-12 items-center px-6 py-4 divide-y dark:divide-gray-700">
+                    <div className="col-span-1 data-table-cell">{vehicle.id.substring(0, 8)}</div>
                     
-                    <div className="col-span-2 font-medium text-gray-900 dark:text-white">{vehicle.licensePlate}</div>
+                     <div className="col-span-2 data-table-cell">{vehicle.licensePlate}</div>
                     
-                    <div className="col-span-2">
-                      <div className="font-medium text-gray-900 dark:text-white">{vehicle.brand} {vehicle.model}</div>
-                      <div className="text-sm text-gray-500 dark:text-gray-400">{formatVehicleType(vehicle.vehicleType)}</div>
+                    <div className="col-span-2 data-table-cell">
+                      <div className="font-medium text-gray-900 dark:text-white">
+                        {vehicle.brand} {vehicle.model}
+                      </div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
+                        {formatVehicleType(vehicle.vehicleType)}
+                      </div>
                     </div>
                     
-                    <div className="col-span-2">
+                    <div className="col-span-2 data-table-cell">
                       <div className="font-medium text-gray-900 dark:text-white">
                         {vehicle.status === 'in' ? '在场' : '已离场'}
                       </div>
@@ -313,9 +317,9 @@ const VehicleList = () => {
                       </div>
                     </div>
                     
-                    <div className="col-span-2">
+                    <div className="col-span-2 data-table-cell">
                       <div className={cn(
-                        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium",
+                        "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium mx-auto",
                         vehicle.serviceType === 'maintenance' 
                           ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-300" 
                           : vehicle.serviceType === 'insurance'
@@ -327,11 +331,11 @@ const VehicleList = () => {
                       </div>
                     </div>
                     
-                    <div className="col-span-1 text-sm text-gray-500 dark:text-gray-400">
+                    <div className="col-span-1 data-table-cell">
                       {calculateDuration(vehicle.entryTime, vehicle.exitTime)}
                     </div>
                     
-                    <div className="col-span-2 flex justify-end space-x-2">
+                    <div className="col-span-2 data-table-cell flex justify-end space-x-2">
                       <Link to={`/vehicles/${vehicle.id}`}>
                         <Button variant="view" size="sm" icon="fa-eye">
                           查看
@@ -354,7 +358,7 @@ const VehicleList = () => {
                       </Button>
                     </div>
                   </div>
-                </div>
+                  </div>
               ))}
             </div>
             

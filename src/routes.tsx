@@ -3,8 +3,8 @@ import MainLayout from './components/layouts/MainLayout';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import VehicleList from './pages/vehicles/VehicleList';
-import VehicleDetail from './pages/vehicles/VehicleDetail';
 import VehicleForm from './pages/vehicles/VehicleForm';
+import VehicleDetail from './pages/vehicles/VehicleDetail';
 import InvoiceList from './pages/invoices/InvoiceList';
 import InvoiceForm from './pages/invoices/InvoiceForm';
 import MaintenanceList from './pages/maintenance/MaintenanceList';
@@ -17,11 +17,15 @@ import UserManagement from './pages/system/UserManagement';
 import UserForm from './pages/system/UserForm';
 import ProtectedRoute from './components/ProtectedRoute';
 
+// 路由配置
 const router = createBrowserRouter([
+  // 登录路由
   {
     path: '/login',
     element: <Login />
   },
+  
+  // 受保护的主路由
   {
     path: '/',
     element: (
@@ -30,10 +34,13 @@ const router = createBrowserRouter([
       </ProtectedRoute>
     ),
     children: [
+      // 首页
       {
         path: '/',
         element: <Home />
       },
+      
+      // 车辆管理
       {
         path: 'vehicles',
         element: <VehicleList />
@@ -50,6 +57,8 @@ const router = createBrowserRouter([
         path: 'vehicles/:id/edit',
         element: <VehicleForm />
       },
+      
+      // 发票管理
       {
         path: 'invoices',
         element: <InvoiceList />
@@ -66,6 +75,8 @@ const router = createBrowserRouter([
         path: 'invoices/:id/edit',
         element: <InvoiceForm />
       },
+      
+      // 维修记录
       {
         path: 'maintenance',
         element: <MaintenanceList />
@@ -82,14 +93,20 @@ const router = createBrowserRouter([
         path: 'maintenance/:id/edit',
         element: <MaintenanceForm />
       },
+      
+      // 数据管理
       {
         path: 'data-management',
         element: <DataManagement />
       },
+      
+      // 系统设置
       {
         path: 'system/settings',
         element: <SystemSettings />
       },
+      
+      // 用户管理
       {
         path: 'system/users',
         element: <UserManagement />
@@ -104,9 +121,11 @@ const router = createBrowserRouter([
       }
     ]
   },
+  
+  // 404重定向
   {
-    path: '/runtime/',
-    element: <Navigate to="/" replace />
+    path: '*',
+    element: <Navigate to="/login" replace />
   }
 ]);
 
