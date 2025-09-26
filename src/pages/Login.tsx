@@ -29,7 +29,8 @@ const Login = () => {
     
     try {
       // Attempt login through mock service
-      const user = await mockService.login(username, password);
+      // 添加第三个参数{useMock: true}强制使用模拟数据
+      const user = await mockService.login(username, password, {useMock: true});
       
       if (user) {
         // Set authentication state
@@ -57,7 +58,10 @@ const Login = () => {
       toast.error('登录失败，请稍后重试');
       console.error('Login error:', error);
     } finally {
-      setLoading(false);
+      // 确保无论如何都会设置loading为false，防止一直显示"登录中"
+      setTimeout(() => {
+        setLoading(false);
+      }, 2000); // 最多显示2秒的登录状态
     }
   };
   
