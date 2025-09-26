@@ -6,12 +6,20 @@ import { initDataSync } from './services/localDataService';
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   
   // 检查认证状态
   useEffect(() => {
     const savedUser = localStorage.getItem('currentUser');
     if (savedUser) {
-      setIsAuthenticated(true);
+      try {
+        const user = JSON.parse(savedUser);
+        setIsAuthenticated(true);
+        setCurrentUser(user);
+      } catch (error) {
+        console.error('解析用户数据失败:', error);
+        localStorage.removeItem('currentUser');
+      }
     }
     
     // 初始化数据同步
@@ -54,14 +62,35 @@ export default function App() {
   // 退出登录处理
   const logout = () => {
     setIsAuthenticated(false);
+    setCurrentUser(null);
     localStorage.removeItem('currentUser');
     localStorage.removeItem('authToken');
+  };
+  
+  // 检查是否为管理员
+  const isAdmin = currentUser?.role === 'admin';
+  
+  // 检查是否有特定权限
+  const hasPermission = (permission: string) => {
+    // 管理员拥有所有权限
+    if (isAdmin) return true;
+    
+    // 检查用户是否有指定权限
+    return currentUser?.permissions?.includes(permission) || false;
   };
   
   // 提供认证上下文
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, setIsAuthenticated, logout }}
+      value={{ 
+        isAuthenticated, 
+        setIsAuthenticated, 
+        currentUser,
+        setCurrentUser,
+        isAdmin,
+        logout,
+        hasPermission
+      }}
     >
       <RouterProvider router={router} />
     </AuthContext.Provider>

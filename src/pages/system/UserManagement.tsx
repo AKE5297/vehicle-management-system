@@ -5,9 +5,12 @@ import { User } from '../../types';
 import { toast } from 'sonner';
 import { Button } from '../../components/ui/Button';
 import { cn } from '../../lib/utils';
+import { useContext } from 'react';
+import { AuthContext } from '../../contexts/authContext';
 
 // User management page
 const UserManagement = () => {
+  const { currentUser } = useContext(AuthContext);
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -32,6 +35,12 @@ const UserManagement = () => {
   
   // Handle user deletion
   const handleDeleteUser = async (userId: string, username: string) => {
+    // 不能删除自己
+    if (userId === currentUser?.id) {
+      toast.error('不能删除当前登录用户');
+      return;
+    }
+    
     if (window.confirm(`确定要删除用户 ${username} 吗?`)) {
       try {
         await mockService.deleteUser(userId);

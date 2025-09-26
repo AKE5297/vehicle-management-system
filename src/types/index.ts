@@ -92,7 +92,7 @@ export interface Note {
 export interface User {
   id: string;
   username: string;
-  password: string;
+  password?: string;
   name: string;
   role: 'admin' | 'user';
   permissions: string[];

@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import { useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useContext, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { AuthContext } from '../contexts/authContext';
 import { toast } from 'sonner';
 import { mockService } from '../services/mockService';
@@ -11,9 +10,13 @@ const Login = () => {
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('admin123');
   const [loading, setLoading] = useState(false);
-  const { setIsAuthenticated } = useContext(AuthContext);
+  const { setIsAuthenticated, setCurrentUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  const location = useLocation();
   const { theme } = useTheme();
+  
+  // 从导航状态获取重定向路径
+  const from = location.state?.from?.pathname || '/';
   
   // 处理表单提交
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,6 +37,7 @@ const Login = () => {
       if (user) {
         // 设置认证状态
         setIsAuthenticated(true);
+        setCurrentUser(user);
         
         // 保存用户数据到本地存储
         localStorage.setItem('currentUser', JSON.stringify(user));
@@ -44,10 +48,10 @@ const Login = () => {
         }
         
         // 显示成功消息
-        toast.success('登录成功，欢迎回来！');
+        toast.success(`欢迎回来，${user.name || user.username}`);
         
-        // 重定向到仪表板
-        navigate('/');
+        // 重定向到登录前的页面或首页
+        navigate(from, { replace: true });
       } else {
         // 显示无效凭据错误
         toast.error('用户名或密码不正确，请重试');
@@ -171,11 +175,7 @@ const Login = () => {
               </button>
             </form>
             
-            {/* 演示账号信息 */}
-            <div className="mt-6 text-center text-sm">
-              <p>演示账号: admin / admin123</p>
-              <p className="mt-1">普通用户: user1 / user123</p>
-            </div>
+             {/* 账号信息请查看README.md文件 */}
           </div>
           
           {/* 页脚 */}

@@ -6,6 +6,8 @@ import { Vehicle } from '../types';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { cn } from '../lib/utils';
 import { isUsingRealAPI } from '../services/mockService';
+import { useContext } from 'react';
+import { AuthContext } from '../contexts/authContext';
 
 // Database connection status component
 import { useTheme } from '../hooks/useTheme';
@@ -84,6 +86,7 @@ const ServerStatus: React.FC = () => {
 };
 
 const Home = () => {
+  const { isAdmin } = useContext(AuthContext);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState({

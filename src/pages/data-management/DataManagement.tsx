@@ -1,15 +1,18 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { toast } from 'sonner';
 import { mockService } from '../../services/mockService';
 import { cn } from '../../lib/utils';
 import { localDataService } from '../../services/localDataService';
+import { AuthContext } from '../../contexts/authContext';
 
-  // Data export options
-const exportOptions = [
+// Data export options
+const exportOptions = (isAdmin: boolean) => [
   { id: 'vehicles', name: '车辆数据', description: '导出车辆照片、基本信息、时间记录和备注' },
   { id: 'invoices', name: '发票数据', description: '导出发票图片、基本信息和发票项目' },
   { id: 'maintenance', name: '维修记录', description: '导出维修时间信息、费用信息、配件信息和维修照片' },
-  { id: 'all', name: '全部数据', description: '导出系统中所有数据' }
+  ...(isAdmin ? [
+    { id: 'all', name: '全部数据', description: '导出系统中所有数据' }
+  ] : [])
 ];
 
 // File format options
@@ -32,6 +35,7 @@ const dateRangePresets = [
 
 // Data management and export page
 const DataManagement = () => {
+  const { isAdmin } = useContext(AuthContext);
   const [selectedData, setSelectedData] = useState('all');
   const [selectedFormat, setSelectedFormat] = useState('excel');
   const [selectedDateRange, setSelectedDateRange] = useState('30days');
@@ -124,11 +128,17 @@ const DataManagement = () => {
       return;
     }
 
+    // 检查是否为非管理员尝试导出全部数据
+    if (selectedData === 'all' && !isAdmin) {
+      toast.error('您没有权限导出全部数据');
+      return;
+    }
+
     setExporting(true);
 
     try {
       // Get export name and format
-      const exportType = exportOptions.find(opt => opt.id === selectedData)?.name || '数据';
+      const exportType = exportOptions(isAdmin).find(opt => opt.id === selectedData)?.name || '数据';
       
       // Get current date for filename
       const dateStr = new Date().toISOString().split('T')[0];
@@ -175,7 +185,7 @@ const DataManagement = () => {
       toast.error('数据导出失败，请重试');
       
       // 记录失败的导出历史
-      const exportType = exportOptions.find(opt => opt.id === selectedData)?.name || '数据';
+      const exportType = exportOptions(isAdmin).find(opt => opt.id === selectedData)?.name || '数据';
       const dateStr = new Date().toISOString().split('T')[0];
       
       setExportHistory(prev => [
@@ -212,13 +222,13 @@ const DataManagement = () => {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">数据导出</h2>
 
           <div className="space-y-6">
-            {/* Data type selection */}
+             {/* Data type selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">
                 选择导出数据类型
               </label>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {exportOptions.map(option => (
+                {exportOptions(isAdmin).map(option => (
                   <div 
                     key={option.id}
                     className={cn(

@@ -9,7 +9,7 @@ import { cn } from '../../lib/utils';
 const MainLayout = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { theme, toggleTheme } = useThemeContext();
-  const { isAuthenticated, logout } = useContext(AuthContext);
+  const { isAuthenticated, logout, isAdmin, currentUser } = useContext(AuthContext);
   const navigate = useNavigate();
   
   // 处理退出登录
@@ -18,15 +18,18 @@ const MainLayout = () => {
     navigate('/login');
   };
   
-  // 侧边栏导航项
+  // 根据用户角色生成侧边栏导航项
   const navItems = [
     { label: '首页', path: '/', icon: 'fa-home' },
     { label: '车辆管理', path: '/vehicles', icon: 'fa-car' },
     { label: '发票管理', path: '/invoices', icon: 'fa-file-invoice-dollar' },
     { label: '维修记录', path: '/maintenance', icon: 'fa-tools' },
     { label: '数据管理', path: '/data-management', icon: 'fa-database' },
-    { label: '系统设置', path: '/system/settings', icon: 'fa-cog' },
-    { label: '用户管理', path: '/system/users', icon: 'fa-users' },
+    // 只有管理员可以看到系统管理相关菜单
+    ...(isAdmin ? [
+      { label: '系统设置', path: '/system/settings', icon: 'fa-cog' },
+      { label: '用户管理', path: '/system/users', icon: 'fa-users' },
+    ] : [])
   ];
   
   return (
@@ -149,12 +152,14 @@ const MainLayout = () => {
                   aria-expanded="false"
                   aria-haspopup="true"
                 >
-                  <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
-                    <i className="fa-solid fa-user"></i>
-                  </div>
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden md:inline-block">管理员</span>
-                  <i className="fa-solid fa-chevron-down text-xs text-gray-500 dark:text-gray-400"></i>
-                </button>
+                    <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600">
+                      <i className="fa-solid fa-user"></i>
+                    </div>
+                    <span className="text-sm font-medium text-gray-700 dark:text-gray-300 hidden md:inline-block">
+                      {currentUser?.name || (isAdmin ? '管理员' : '普通用户')}
+                    </span>
+                    <i className="fa-solid fa-chevron-down text-xs text-gray-500 dark:text-gray-400"></i>
+                  </button>
                 
                 {/* 下拉菜单 */}
                 <div className="absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 z-50 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 transform origin-top-right group-hover:scale-100 scale-95 bg-white dark:bg-gray-700">

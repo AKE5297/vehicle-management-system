@@ -94,22 +94,30 @@ const router = createBrowserRouter([
         element: <MaintenanceForm />
       },
       
-      // 数据管理
+       // 数据管理
       {
         path: 'data-management',
         element: <DataManagement />
       },
       
-      // 系统设置
+      // 系统设置 - 只有管理员可以访问
       {
         path: 'system/settings',
-        element: <SystemSettings />
+        element: (
+          <ProtectedRoute requiredRole="admin">
+            <SystemSettings />
+          </ProtectedRoute>
+        )
       },
       
-      // 用户管理
+      // 用户管理 - 只有管理员可以访问
       {
         path: 'system/users',
-        element: <UserManagement />
+        element: (
+          <ProtectedRoute requiredRole="admin">
+            <UserManagement />
+          </ProtectedRoute>
+        )
       },
       {
         path: 'system/users/new',

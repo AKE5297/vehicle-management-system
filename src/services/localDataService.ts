@@ -594,6 +594,64 @@
     }
   }
   
+  // 准备导出数据（根据权限过滤）
+  private prepareExportData(type: string): any {
+    const exportData: any = {
+      exportDate: new Date().toISOString(),
+      version: '1.0.0',
+      type: type,
+      source: 'vehicle_management_system'
+    };
+    
+    // 检查是否使用真实API
+    if (isUsingRealAPI()) {
+      // 真实API模式下，直接返回模拟数据结构
+      return exportData;
+    }
+    
+    // 获取当前用户信息以进行权限检查
+    const authData = localStorage.getItem('currentUser');
+    const currentUser = authData ? JSON.parse(authData) : null;
+    const isAdmin = currentUser?.role === 'admin';
+    
+    // 根据类型准备数据
+    if (type === 'vehicles' || type === 'all') {
+      const vehicles = this.getVehicles();
+      // 非管理员用户只能导出自己相关的车辆数据
+      if (isAdmin) {
+        exportData.vehicles = vehicles;
+      } else {
+        // 这里简化处理，实际应该有更复杂的权限检查逻辑
+        // 假设普通用户只能看到部分数据或自己负责的车辆
+        exportData.vehicles = vehicles.slice(0, Math.min(2, vehicles.length));
+      }
+    }
+    
+    if (type === 'invoices' || type === 'all') {
+      const invoices = this.getInvoices();
+      // 非管理员用户只能导出自己相关的发票数据
+      if (isAdmin) {
+        exportData.invoices = invoices;
+      } else {
+        // 简化处理
+        exportData.invoices = invoices.slice(0, Math.min(2, invoices.length));
+      }
+    }
+    
+    if (type === 'maintenance' || type === 'all') {
+      const maintenance = this.getMaintenanceRecords();
+      // 非管理员用户只能导出自己相关的维修记录
+      if (isAdmin) {
+        exportData.maintenance = maintenance;
+      } else {
+        // 简化处理
+        exportData.maintenance = maintenance.slice(0, Math.min(2, maintenance.length));
+      }
+    }
+    
+    return exportData;
+  }
+  
   // 生成紧急备用JSON内容
   private generateEmergencyJsonContent(type: string): string {
     const emergencyData: any = {

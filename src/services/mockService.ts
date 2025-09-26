@@ -273,34 +273,21 @@ class MockService {
   ];
 
   // Authentication methods
-  login(username: string, password: string): Promise<any> {
-    // 如果使用真实API
-    if (USE_REAL_API && !arguments[2]?.useMock) {
-      return this.apiFetch('login', {
-        method: 'POST',
-        body: JSON.stringify({ username, password })
-      }).then(data => {
-        // 保存认证信息到本地存储
-        if (data.token) {
-          localStorage.setItem('authToken', data.token);
-        }
-        return data.user;
-      });
-    }
-    
-    // 模拟登录
+  login(username: string, password: string, options?: {useMock: boolean}): Promise<any> {
+    // 由于USE_REAL_API设置为false，始终使用模拟登录
     return new Promise((resolve) => {
       setTimeout(() => {
+        // 查找匹配的用户
         const user = this.users.find(
           u => u.username === username && u.password === password
         );
         
         if (user) {
-          // Create a copy without password for security
+          // 创建不包含密码的用户副本以保证安全
           const userWithoutPassword = { ...user, token: 'mock-jwt-token' };
           delete userWithoutPassword.password;
           
-          // Update last login time (in real app this would be saved to database)
+          // 更新最后登录时间
           const userIndex = this.users.findIndex(u => u.id === user.id);
           if (userIndex !== -1) {
             this.users[userIndex] = {
@@ -309,7 +296,7 @@ class MockService {
             };
           }
           
-          // Log the login action
+          // 记录登录操作
           this.logAction(user.id, 'login', 'user', user.id, { success: true });
           
           resolve(userWithoutPassword);
@@ -317,7 +304,7 @@ class MockService {
           this.logAction('anonymous', 'login', 'user', 'unknown', { success: false });
           resolve(null);
         }
-      }, 800); // Simulate API delay
+      }, 800); // 模拟API延迟
     });
   }
 
