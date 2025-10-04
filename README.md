@@ -536,11 +536,16 @@ mongorestore --db vehicle-management --username admin --password password --auth
 
 如果这个项目对你有帮助，请考虑给我买杯咖啡 ☕
 
-微信支付
-![微信支付](https://github.com/user-attachments/assets/1d3bae2a-4f7b-437b-9e79-d3fdfb80af75)
-支付宝支付
-![支付宝支付](https://github.com/user-attachments/assets/ce03a5fe-d2f5-4ff4-b8eb-e611aab43f95)
-
+<div style="display: flex; gap: 20px; justify-content: center; margin: 30px 0;">
+  <div style="text-align: center;">
+    <p style="margin-bottom: 10px; font-weight: bold;">支付宝</p>
+    <img src="https://github.com/user-attachments/assets/ce03a5fe-d2f5-4ff4-b8eb-e611aab43f95" alt="支付宝收款码" width="200" />
+  </div>
+  <div style="text-align: center;">
+    <p style="margin-bottom: 10px; font-weight: bold;">微信支付</p>
+    <img src="https://github.com/user-attachments/assets/1d3bae2a-4f7b-437b-9e79-d3fdfb80af75" alt="微信收款码" width="200" />
+  </div>
+</div>
 
 
 📄 许可证
