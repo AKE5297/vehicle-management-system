@@ -9,8 +9,9 @@ services:
     ports:
       - "3000:5000"  # 直接将容器5000端口映射到主机3000端口，简化访问
     volumes:
-      - ./:/app
-      - ./uploads:/app/uploads
+      - .:/app  # 确保当前目录正确挂载到容器的/app目录
+      - node_modules:/app/node_modules  # 避免本地node_modules与容器冲突
+      - ./uploads:/app/uploads  # 确保上传目录正确挂载
     environment:
       - MONGODB_URI=mongodb://admin:password@db:27017/vehicle-management?authSource=admin
       - JWT_SECRET=your-secret-key
@@ -18,8 +19,8 @@ services:
       - PORT=5000
     depends_on:
       - db
-    # 在构建命令中先安装git工具，确保所有依赖项都可以正常安装
-    command: sh -c "apk add --no-cache git && npm install -g pnpm && pnpm install && pnpm build && pnpm start"
+    # 优化构建命令，先检查文件是否存在，然后安装依赖
+    command: sh -c "echo '查看当前目录内容...' && ls -la && echo '检查package.json是否存在...' && if [ -f /app/package.json ]; then apk add --no-cache git && npm install -g pnpm && pnpm install && pnpm build && pnpm start; else echo '错误: 未找到package.json文件，检查卷挂载配置'; ls -la /; fi"
     
   db:
     image: mongo:latest
@@ -32,3 +33,6 @@ services:
     ports:
       - "27017:27017"
     restart: always
+    
+volumes:
+  node_modules:  # 创建named volume避免卷挂载冲突
