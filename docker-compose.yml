@@ -2,16 +2,21 @@ version: '3.8'
 
 services:
   app:
-    # 选择一个包含git的基础镜像，或者在构建时安装git
+    # 选择一个包含git的基础镜像
     image: node:18-alpine
     container_name: vehicle-management-app
     working_dir: /app
-    ports:
-      - "3000:5000"  # 直接将容器5000端口映射到主机3000端口，简化访问
+  ports:
+      - "3300:5000"  # 将容器5000端口映射到主机3300端口，避免3000端口冲突
     volumes:
-      - .:/app  # 确保当前目录正确挂载到容器的/app目录
-      - node_modules:/app/node_modules  # 避免本地node_modules与容器冲突
-      - ./uploads:/app/uploads  # 确保上传目录正确挂载
+      # 确保当前目录正确映射到容器的/app目录
+      - ./:/app  # 将当前目录直接映射到容器的/app目录，确保package.json能被正确找到
+      # 避免本地node_modules与容器冲突
+      - node_modules:/app/node_modules  
+      # 确保上传目录正确挂载
+      - ./app-data/uploads:/app/uploads  
+      # 挂载日志目录
+      - ./app-data/logs:/app/logs
     environment:
       - MONGODB_URI=mongodb://admin:password@db:27017/vehicle-management?authSource=admin
       - JWT_SECRET=your-secret-key
@@ -20,7 +25,7 @@ services:
     depends_on:
       - db
     # 优化构建命令，先检查文件是否存在，然后安装依赖
-    command: sh -c "echo '查看当前目录内容...' && ls -la && echo '检查package.json是否存在...' && if [ -f /app/package.json ]; then apk add --no-cache git && npm install -g pnpm && pnpm install && pnpm build && pnpm start; else echo '错误: 未找到package.json文件，检查卷挂载配置'; ls -la /; fi"
+    command: sh -c "echo '===== 检查容器内文件结构 =====' && ls -la && echo '===== 检查/app目录 =====' && ls -la /app && echo '===== 检查package.json是否存在 =====' && if [ -f /app/package.json ]; then echo '找到package.json，开始安装依赖...' && apk add --no-cache git && npm install -g pnpm && pnpm install && pnpm build && pnpm start; else echo '错误: 未找到package.json文件，检查卷挂载配置'; echo '宿主机目录应该正确映射到容器的/app目录'; ls -la /; fi"
     
   db:
     image: mongo:latest
@@ -29,7 +34,8 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=password
     container_name: vehicle-management-db
     volumes:
-      - ./mongodb-data:/data/db
+      # MongoDB数据独立挂载
+      - ./app-data/mongodb:/data/db
     ports:
       - "27017:27017"
     restart: always

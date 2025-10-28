@@ -11,6 +11,12 @@ import multer from 'multer';
 // 加载环境变量
 dotenv.config();
 
+// 确保日志目录存在
+const logDir = path.join(__dirname, 'logs');
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir, { recursive: true });
+}
+
 // 创建Express应用
 const app = express();
 
@@ -24,8 +30,16 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/vehicle-m
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })
-.then(() => console.log('MongoDB连接成功'))
-.catch(err => console.error('MongoDB连接失败:', err));
+.then(() => {
+  console.log('MongoDB连接成功');
+  // 记录到日志文件
+  fs.appendFileSync(path.join(logDir, 'app.log'), `[${new Date().toISOString()}] MongoDB连接成功\n`);
+})
+.catch(err => {
+  console.error('MongoDB连接失败:', err);
+  // 记录到日志文件
+  fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] MongoDB连接失败: ${err.message}\n`);
+});
 
 // 用户模型
 const UserSchema = new mongoose.Schema({
@@ -120,7 +134,8 @@ const SystemLogSchema = new mongoose.Schema({
 // 创建模型
 const User = mongoose.model('User', UserSchema);
 const Vehicle = mongoose.model('Vehicle', VehicleSchema);
-const MaintenanceRecord = mongoose.model('MaintenanceRecord', MaintenanceRecordSchema);const Invoice = mongoose.model('Invoice', InvoiceSchema);
+const MaintenanceRecord = mongoose.model('MaintenanceRecord', MaintenanceRecordSchema);
+const Invoice = mongoose.model('Invoice', InvoiceSchema);
 const SystemLog = mongoose.model('SystemLog', SystemLogSchema);
 
 // 认证中间件
@@ -186,6 +201,8 @@ app.post('/api/login', async (req, res) => {
   } catch (error) {
     console.error('登录错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 登录错误: ${error.message}\n`);
   }
 });
 
@@ -197,6 +214,8 @@ app.get('/api/vehicles', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('获取车辆列表错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 获取车辆列表错误: ${error.message}\n`);
   }
 });
 
@@ -210,6 +229,8 @@ app.get('/api/vehicles/:id', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('获取车辆详情错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 获取车辆详情错误: ${error.message}\n`);
   }
 });
 
@@ -232,6 +253,8 @@ app.post('/api/vehicles', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('创建车辆错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 创建车辆错误: ${error.message}\n`);
   }
 });
 
@@ -256,6 +279,8 @@ app.put('/api/vehicles/:id', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('更新车辆错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 更新车辆错误: ${error.message}\n`);
   }
 });
 
@@ -280,6 +305,8 @@ app.delete('/api/vehicles/:id', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('删除车辆错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 删除车辆错误: ${error.message}\n`);
   }
 });
 
@@ -291,6 +318,8 @@ app.get('/api/maintenance', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('获取维修记录错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 获取维修记录错误: ${error.message}\n`);
   }
 });
 
@@ -304,6 +333,8 @@ app.get('/api/maintenance/:id', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('获取维修记录详情错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 获取维修记录详情错误: ${error.message}\n`);
   }
 });
 
@@ -326,6 +357,8 @@ app.post('/api/maintenance', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('创建维修记录错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 创建维修记录错误: ${error.message}\n`);
   }
 });
 
@@ -337,6 +370,8 @@ app.get('/api/invoices', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('获取发票列表错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 获取发票列表错误: ${error.message}\n`);
   }
 });
 
@@ -350,6 +385,8 @@ app.get('/api/invoices/:id', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('获取发票详情错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 获取发票详情错误: ${error.message}\n`);
   }
 });
 
@@ -372,6 +409,8 @@ app.post('/api/invoices', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('创建发票错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 创建发票错误: ${error.message}\n`);
   }
 });
 
@@ -395,6 +434,8 @@ app.get('/api/users', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('获取用户列表错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 获取用户列表错误: ${error.message}\n`);
   }
 });
 
@@ -439,124 +480,131 @@ app.post('/api/users', authMiddleware, async (req, res) => {
     
     res.status(201).json(userWithoutPassword);
   } catch (error) {
-    console.error('创建用户错误:', error);res.status(500).json({ message: '服务器错误' });
+    console.error('创建用户错误:', error);
+    res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 创建用户错误: ${error.message}\n`);
   }
 });
 
-  // 静态文件服务 - 提供上传目录的访问
-  app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// 静态文件服务 - 提供上传目录的访问
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
   
-  // 文件上传处理
-  app.post('/api/upload', authMiddleware, async (req, res) => {
-    try {
-      // 确保上传目录存在
-      const uploadDir = process.env.UPLOAD_DIR || 'uploads';
-      if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-        console.log(`创建上传目录: ${uploadDir}`);
+// 文件上传处理
+app.post('/api/upload', authMiddleware, async (req, res) => {
+  try {
+    // 确保上传目录存在
+    const uploadDir = process.env.UPLOAD_DIR || 'uploads';
+    if (!fs.existsSync(uploadDir)) {
+      fs.mkdirSync(uploadDir, { recursive: true });
+      console.log(`创建上传目录: ${uploadDir}`);
+    }
+    
+    // 使用multer处理文件上传
+    const storage = multer.diskStorage({
+      destination: (req, file, cb) => {
+        const directory = req.body.directory || 'general';
+        const directoryPath = `${uploadDir}/${directory}`;
+        
+        // 创建目录（如果不存在）
+        if (!fs.existsSync(directoryPath)) {
+          fs.mkdirSync(directoryPath, { recursive: true });
+          console.log(`创建目录: ${directoryPath}`);
+        }
+        cb(null, directoryPath);
+      },
+      filename: (req, file, cb) => {
+        // 生成唯一的文件名
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+        const extension = file.originalname.split('.').pop() || 'jpg';
+        let filename = `${timestamp}.${extension}`;
+        
+        // 如果提供了车牌号，添加到文件名
+        if (req.body.licensePlate) {
+          filename = `${timestamp}_${req.body.licensePlate.replace(/\s+/g, '_')}.${extension}`;
+        }
+        
+        cb(null, filename);
+      }
+    });
+    
+    // 文件过滤 - 只允许图片
+    const fileFilter = (req, file, cb) => {
+      if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+      } else {
+        cb(new Error('只允许上传图片文件'), false);
+      }
+    };
+    
+    // 配置multer
+    const upload = multer({ 
+      storage: storage,
+      limits: {
+        fileSize: 10 * 1024 * 1024, // 增加限制到10MB以适应高质量图片
+      },
+      fileFilter: fileFilter
+    }).single('file');
+    
+    // 处理上传
+    upload(req, res, async (err) => {
+      if (err) {
+        console.error('文件上传错误:', err);
+        // 记录到日志文件
+        fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 文件上传错误: ${err.message}\n`);
+        return res.status(400).json({ message: err.message });
       }
       
-      // 使用multer处理文件上传
-      const storage = multer.diskStorage({
-        destination: (req, file, cb) => {
-          const directory = req.body.directory || 'general';
-          const directoryPath = `${uploadDir}/${directory}`;
-          
-          // 创建目录（如果不存在）
-          if (!fs.existsSync(directoryPath)) {
-            fs.mkdirSync(directoryPath, { recursive: true });
-            console.log(`创建目录: ${directoryPath}`);
-          }
-          cb(null, directoryPath);
-        },
-        filename: (req, file, cb) => {
-          // 生成唯一的文件名
-          const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-          const extension = file.originalname.split('.').pop() || 'jpg';
-          let filename = `${timestamp}.${extension}`;
-          
-          // 如果提供了车牌号，添加到文件名
-          if (req.body.licensePlate) {
-            filename = `${timestamp}_${req.body.licensePlate.replace(/\s+/g, '_')}.${extension}`;
-          }
-          
-          cb(null, filename);
-        }
-      });
+      // 验证文件是否上传成功
+      if (!req.file) {
+        return res.status(400).json({ message: '未收到上传文件' });
+      }
       
-      // 文件过滤 - 只允许图片
-      const fileFilter = (req, file, cb) => {
-        if (file.mimetype.startsWith('image/')) {
-          cb(null, true);
-        } else {
-          cb(new Error('只允许上传图片文件'), false);
-        }
-      };
+      // 构建完整路径和URL
+      const fullPath = req.file.path;
       
-      // 配置multer
-      const upload = multer({ 
-        storage: storage,
-        limits: {
-          fileSize: 10 * 1024 * 1024, // 增加限制到10MB以适应高质量图片
-        },
-        fileFilter: fileFilter
-      }).single('file');
+      // 构建正确的文件URL - 修复URL构建逻辑
+      // 获取相对于项目根目录的相对路径
+      const relativePath = fullPath.replace(/\\/g, '/').replace(__dirname + '/', '');
+      // 确保路径以/uploads/开头
+      const fileUrl = `/${relativePath}`;
       
-      // 处理上传
-      upload(req, res, async (err) => {
-        if (err) {
-          console.error('文件上传错误:', err);
-          return res.status(400).json({ message: err.message });
-        }
-        
-        // 验证文件是否上传成功
-        if (!req.file) {
-          return res.status(400).json({ message: '未收到上传文件' });
-        }
-        
-        // 构建完整路径和URL
-        const fullPath = req.file.path;
-        
-        // 构建正确的文件URL - 修复URL构建逻辑
-        // 获取相对于项目根目录的相对路径
-        const relativePath = fullPath.replace(/\\/g, '/').replace(__dirname + '/', '');
-        // 确保路径以/uploads/开头
-        const fileUrl = `/${relativePath}`;
-        
-        // 记录文件上传日志
-        await SystemLog.create({
-          userId: req.user.id,
-          action: 'upload',
-          entityType: 'file',
-          entityId: req.file.filename,
-          details: { 
-            directory: req.body.directory, 
-            filename: req.file.filename,
-            size: req.file.size,
-            mimetype: req.file.mimetype,
-            path: fullPath,
-            url: fileUrl
-          },
-          ipAddress: req.ip
-        });
-        
-        console.log(`文件已上传: ${fullPath}`);
-        console.log(`生成的文件URL: ${fileUrl}`);
-        
-        // 返回文件信息
-        res.json({
-          url: fileUrl,
+      // 记录文件上传日志
+      await SystemLog.create({
+        userId: req.user.id,
+        action: 'upload',
+        entityType: 'file',
+        entityId: req.file.filename,
+        details: { 
+          directory: req.body.directory, 
           filename: req.file.filename,
-          path: fullPath,
           size: req.file.size,
-          mimetype: req.file.mimetype
-        });
+          mimetype: req.file.mimetype,
+          path: fullPath,
+          url: fileUrl
+        },
+        ipAddress: req.ip
       });
-    } catch (error) {
-      console.error('文件上传错误:', error);
-      res.status(500).json({ message: '服务器错误: ' + error.message });
-    }
-  });
+      
+      console.log(`文件已上传: ${fullPath}`);
+      console.log(`生成的文件URL: ${fileUrl}`);
+      
+      // 返回文件信息
+      res.json({
+        url: fileUrl,
+        filename: req.file.filename,
+        path: fullPath,
+        size: req.file.size,
+        mimetype: req.file.mimetype
+      });
+    });
+  } catch (error) {
+    console.error('文件上传错误:', error);
+    res.status(500).json({ message: '服务器错误: ' + error.message });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 文件上传错误: ${error.message}\n`);
+  }
+});
 
 // 数据导出功能
 app.get('/api/export/:format', authMiddleware, async (req, res) => {
@@ -584,6 +632,8 @@ app.get('/api/export/:format', authMiddleware, async (req, res) => {
   } catch (error) {
     console.error('数据导出错误:', error);
     res.status(500).json({ message: '服务器错误' });
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 数据导出错误: ${error.message}\n`);
   }
 });
 
@@ -593,12 +643,67 @@ app.use(express.static(path.join(__dirname, 'dist/static')));
 
 // 处理SPA应用的路由问题，确保所有路由都指向index.html
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'dist/static/index.html'));
+  try {
+    // 先检查dist/static目录是否存在
+    if (!fs.existsSync(path.join(__dirname, 'dist/static/index.html'))) {
+      console.warn('前端构建文件不存在，使用备用页面');
+      // 返回一个简单的HTML页面作为备用
+      res.send(`
+        <!DOCTYPE html>
+        <html lang="zh-CN">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>车辆管理系统 - 服务运行中</title>
+          <style>
+            body {
+              font-family: Arial, sans-serif;
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              height: 100vh;
+              margin: 0;
+              background-color: #f5f5f5;
+            }
+            h1 {
+              color: #333;
+            }
+            p {
+              color: #666;
+              margin-top: 10px;
+            }
+            .info {
+              text-align: center;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="info">
+            <h1>车辆管理系统服务运行中</h1>
+            <p>前端构建文件尚未生成，请执行构建命令</p>
+            <p>或等待容器自动完成构建过程</p>
+          </div>
+        </body>
+        </html>
+      `);
+      return;
+    }
+    
+    res.sendFile(path.join(__dirname, 'dist/static/index.html'));
+  } catch (error) {
+    console.error('提供静态文件错误:', error);
+    res.status(500).send('服务器错误');
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 提供静态文件错误: ${error.message}\n`);
+  }
 });
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`服务器运行在端口 ${PORT}`);
+  // 记录到日志文件
+  fs.appendFileSync(path.join(logDir, 'app.log'), `[${new Date().toISOString()}] 服务器运行在端口 ${PORT}\n`);
   
   // 初始化管理员账户（如果不存在）
   initAdminUser();
@@ -621,8 +726,12 @@ async function initAdminUser() {
       });
       
       console.log('管理员账户已创建: 用户名: admin, 密码: admin123');
+      // 记录到日志文件
+      fs.appendFileSync(path.join(logDir, 'app.log'), `[${new Date().toISOString()}] 管理员账户已创建: 用户名: admin\n`);
     }
   } catch (error) {
     console.error('初始化管理员账户错误:', error);
+    // 记录到日志文件
+    fs.appendFileSync(path.join(logDir, 'error.log'), `[${new Date().toISOString()}] 初始化管理员账户错误: ${error.message}\n`);
   }
 }

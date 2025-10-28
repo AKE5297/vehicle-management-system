@@ -9,7 +9,8 @@
     "dev": "concurrently \"pnpm dev:client\" \"pnpm dev:server\"",
     "build:client": "vite build --outDir dist/static",
     "build": "rm -rf dist && pnpm install --no-frozen-lockfile && pnpm build:client && cp package.json dist && touch dist/build.flag",
-    "start": "node server.js"
+    "start": "node server.js",
+    "docker:init": "mkdir -p app-data/app app-data/uploads app-data/logs app-data/mongodb"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
