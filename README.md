@@ -1,611 +1,461 @@
-# 车辆管理系统 (Vehicle Management System)
+# 车辆管理系统
 
-一个功能完整的车辆管理系统，支持车辆信息管理、维修记录跟踪、发票管理等功能。
+## 项目简介
 
-## 🚀 功能特性
+车辆管理系统是一款专为汽车维修、保养和保险服务行业设计的现代化管理工具，旨在帮助企业高效管理车辆信息、维修记录、发票和客户数据。
 
-- 🚗 **车辆管理**：车辆信息录入、查询、编辑和删除
-- 🔧 **维修记录**：跟踪和管理车辆维修历史
-- 💳 **发票管理**：管理车辆维修和服务相关的发票
-- 👥 **用户管理**：支持不同角色的用户权限管理
-- 📊 **数据统计**：提供车辆状态和服务数据的可视化展示
-- 💾 **数据备份与恢复**：支持数据的导出、导入和自动备份
-- 🌙 **深色模式**：支持明暗两种主题模式
-- 📱 **响应式设计**：适配不同尺寸的设备屏幕
+## 功能特点
 
-## 📦 技术栈
+- **车辆信息管理**：完整记录车辆基本信息、服务历史和状态追踪
+- **维修保养管理**：详细记录维修过程、使用配件和工时费用
+- **发票管理**：自动生成、管理和追踪各类服务发票
+- **用户权限控制**：支持多级用户权限管理，保障数据安全
+- **数据导出功能**：支持导出多种格式的数据报告（JSON、CSV、Excel）
+- **自动数据备份**：定期自动备份系统数据，防止数据丢失
+- **响应式设计**：适配各种设备屏幕，提供流畅的用户体验
 
-- **前端**：React 18, TypeScript, Tailwind CSS, React Router
-- **后端**：Node.js, Express, MongoDB
-- **部署**：Docker, Docker Compose
+## 系统架构
 
-## 📸 系统截图
+- **前端技术栈**：React 18+、TypeScript、Tailwind CSS
+- **数据存储**：本地数据存储 + MongoDB（可选）
+- **部署方式**：支持本地部署、Docker部署、云端部署
 
-![系统仪表盘](https://space.coze.cn/api/coze_space/gen_image?image_size=landscape_16_9&prompt=Vehicle%20management%20system%20dashboard%20with%20charts&sign=107103625046112b158c0265031d7cd8)
+## 快速开始
 
-## 💰 支持项目
+### 安装前提
 
-如果您觉得这个项目对您有帮助，可以通过以下方式支持我们的开发：
+- Node.js 18+
+- npm/yarn/pnpm
+- MongoDB（可选，默认使用本地存储）
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6 my-8">
-  <div class="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
-    <h3 class="text-lg font-semibold mb-4 text-center">微信支付</h3>
-    <img src="https://github.com/user-attachments/assets/1d3bae2a-4f7b-437b-9e79-d3fdfb80af75" alt="微信支付二维码" class="w-64 h-64 object-contain mb-4" />
-    <p class="text-sm text-gray-600 dark:text-gray-400">感谢您的支持！</p>
-  </div>
-  
-  <div class="flex flex-col items-center p-6 bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-lg transition-all duration-300">
-    <h3 class="text-lg font-semibold mb-4 text-center">支付宝支付</h3>
-    <img src="https://github.com/user-attachments/assets/ce03a5fe-d2f5-4ff4-b8eb-e611aab43f95" alt="支付宝支付二维码" class="w-64 h-64 object-contain mb-4" />
-    <p class="text-sm text-gray-600 dark:text-gray-400">感谢您的支持！</p>
-  </div>
-</div>
+### 本地开发
 
-## 🔧 部署指南
+1. 克隆项目仓库
 
-### <details>
-<summary>📱 本地部署</summary>
-
-### 环境要求
-- Node.js 16+
-- npm/pnpm/yarn
-- MongoDB 4.0+
-
-### 部署步骤
-
-1. 克隆项目代码
 ```bash
 git clone https://github.com/AKE5297/vehicle-management-system.git
 cd vehicle-management-system
 ```
 
 2. 安装依赖
+
 ```bash
+# 使用 npm
 npm install
-# 或者使用pnpm
+
+# 或使用 pnpm
 pnpm install
 ```
 
 3. 启动开发服务器
+
 ```bash
 npm run dev
-# 或者使用pnpm
+# 或
 pnpm dev
 ```
 
-4. 打开浏览器访问
-```
-http://localhost:3000
-```
+4. 访问系统
+   打开浏览器，访问 http://localhost:5173
 
-### 构建生产版本
+## 部署方式
 
-```bash
-npm run build
-# 或者使用pnpm
-pnpm build
+<details>
+<summary>本地部署</summary>
 
-# 启动生产服务器
-npm run preview
-# 或者使用pnpm
-pnpm preview
-```
-</details>
+### 本地部署
 
-### <details>
-<summary>🖥️ Docker部署</summary>
+1. 克隆项目仓库
 
-### 使用Docker Compose部署
-
-1. 克隆项目代码
 ```bash
 git clone https://github.com/AKE5297/vehicle-management-system.git
 cd vehicle-management-system
 ```
 
-2. 启动Docker服务
+2. 安装依赖并构建
 
-3. 使用Docker Compose启动应用
+```bash
+# 使用 npm
+npm install
+npm run build
+
+# 或使用 pnpm
+pnpm install
+pnpm build
+```
+
+3. 启动应用
+
+```bash
+npm run preview
+# 或
+pnpm preview
+```
+
+4. 访问系统
+   打开浏览器，访问 http://localhost:4173
+</details>
+
+<details>
+<summary>Docker 部署</summary>
+
+### Docker 部署
+
+1. 确保已安装 Docker 和 Docker Compose
+2. 克隆项目仓库
+
+```bash
+git clone https://github.com/AKE5297/vehicle-management-system.git
+cd vehicle-management-system
+```
+
+3. 使用 Docker Compose 启动应用
+
 ```bash
 docker-compose up -d
 ```
 
-4. 打开浏览器访问
-```
-http://localhost:3001
-```
+4. 访问系统
+   打开浏览器，访问 http://localhost:3001
 
-### Docker Compose配置详解
+**docker-compose.yml 文件说明：**
 
 ```yaml
-version: '3.8'  # 使用的Docker Compose版本
+version: '3.8'
 
 services:
-  app:  # 应用服务
-    image: node:18-alpine  # 使用Node.js 18的Alpine版本镜像
+  app:
+    image: node:18-alpine  # 使用 Node.js 18 Alpine 镜像
     container_name: vehicle-management-app  # 容器名称
     working_dir: /app  # 工作目录
     ports:
-      - "3001:3000"  # 将容器的3000端口映射到主机的3001端口（前端）
-      - "5001:5000"  # 将容器的5000端口映射到主机的5001端口（后端）
+      - "3001:3000"  # 端口映射：主机端口:容器端口
+      - "5001:5000"  # API 服务端口映射
     volumes:
-      - ./:/app  # 将当前目录挂载到容器的/app目录
-      - ./uploads:/app/uploads  # 映射上传目录
-    environment:  # 环境变量配置
-      - MONGODB_URI=mongodb://admin:password@db:27017/vehicle-management?authSource=admin
-      - JWT_SECRET=your-secret-key
-      - UPLOAD_DIR=/app/uploads
-      - PORT=5000
-    depends_on:  # 依赖的服务
-      - db
-    command: sh -c "npm install -g pnpm && pnpm install && pnpm build && pnpm start"  # 启动命令
+      - ./:/app  # 将当前目录挂载到容器的 /app 目录
+      - ./uploads:/app/uploads  # 挂载上传目录
+    environment:
+      - MONGODB_URI=mongodb://admin:password@db:27017/vehicle-management?authSource=admin  # MongoDB 连接字符串
+      - JWT_SECRET=your-secret-key  # JWT 密钥
+      - UPLOAD_DIR=/app/uploads  # 上传目录配置
+      - PORT=5000  # API 服务端口
+    depends_on:
+      - db  # 依赖 MongoDB 服务
+    command: sh -c "npm install -g pnpm && pnpm install && pnpm build && pnpm start"  # 启动命令，安装依赖并构建运行
 
-  db:  # 数据库服务
-    image: mongo:latest  # 使用最新的MongoDB镜像
-    environment:  # MongoDB环境变量
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
-    container_name: vehicle-management-db  # 数据库容器名称
+  db:
+    image: mongo:latest  # 使用最新版 MongoDB 镜像
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin  # MongoDB 管理员用户名
+      - MONGO_INITDB_ROOT_PASSWORD=password  # MongoDB 管理员密码
+    container_name: vehicle-management-db  # MongoDB 容器名称
     volumes:
-      - ./mongodb-data:/data/db  # 持久化MongoDB数据
+      - ./mongodb-data:/data/db  # 挂载数据目录，持久化存储
     ports:
-      - "27017:27017"  # 映射MongoDB端口
-    restart: always  # 自动重启策略
-```
-
-### 停止和重启服务
-
-```bash
-# 停止服务
-docker-compose down
-
-# 重启服务
-docker-compose restart
+      - "27017:27017"  # MongoDB 端口映射
+    restart: always  # 自动重启
 ```
 </details>
 
-### <details>
-<summary>🗄️ NAS部署 (群晖、飞牛OS等)</summary>
+<details>
+<summary>NAS 部署（群辉、飞牛OS等）</summary>
 
-### 群晖NAS部署步骤
+### NAS 部署
 
-1. 登录群晖DSM管理界面
+1. 在 NAS 上安装 Docker 套件
+2. 打开 Docker 套件，创建新的容器
+3. 配置容器参数：
+   - 镜像：node:18-alpine
+   - 端口映射：3001->3000, 5001->5000
+   - 卷映射：
+     - 本地路径:目标路径，例如 `/volume1/docker/vehicle-management-system:/app`
+     - 本地路径:目标路径，例如 `/volume1/docker/vehicle-management-system/uploads:/app/uploads`
+     - 本地路径:目标路径，例如 `/volume1/docker/vehicle-management-system/mongodb-data:/data/db`
+   - 环境变量：
+     - MONGODB_URI=mongodb://admin:password@localhost:27017/vehicle-management?authSource=admin
+     - JWT_SECRET=your-secret-key
+     - UPLOAD_DIR=/app/uploads
+     - PORT=5000
+4. 启动容器
+5. 访问系统：http://[NAS IP]:3001
 
-2. 打开Docker应用
-
-3. 在注册表中搜索并下载以下镜像：
-   - `node:18-alpine`
-   - `mongo:latest`
-
-4. 在文件管理器中创建项目目录，例如：`/volume1/docker/vehicle-management`
-
-5. 通过SSH或文件管理器上传项目代码到创建的目录
-
-6. 上传或创建`docker-compose.yml`文件（使用上面的配置）
-
-7. 打开SSH终端，执行以下命令：
-```bash
-cd /volume1/docker/vehicle-management
-docker-compose up -d
-```
-
-8. 通过浏览器访问：`http://<你的NAS IP>:3001`
-
-### 飞牛OS部署步骤
-
-1. 登录飞牛OS管理界面
-
-2. 打开应用商店，安装Docker
-
-3. 创建项目目录并上传代码
-
-4. 创建并编辑`docker-compose.yml`文件（使用上面的配置，但注意端口冲突问题）
-
-5. 通过终端执行部署命令：
-```bash
-docker-compose up -d
-```
-
-6. 访问`http://<你的NAS IP>:3001`
+**注意：** 如果您的 NAS 支持 Docker Compose，可以直接使用项目中的 docker-compose.yml 文件进行部署。
 </details>
 
-### <details>
-<summary>☁️ 服务器部署</summary>
+<details>
+<summary>服务器部署</summary>
 
-### 环境要求
-- 一台VPS或云服务器
-- Ubuntu/CentOS/Debian等Linux系统
-- 已安装Docker和Docker Compose
+### 服务器部署
 
-### 部署步骤
+1. 准备一台 VPS 或云服务器（推荐配置：2GB RAM，2核 CPU）
+2. 安装 Node.js 18+ 和 MongoDB（可选）
+3. 克隆项目仓库
 
-1. 登录服务器
-```bash
-ssh user@your-server-ip
-```
-
-2. 安装必要的软件
-```bash
-# Ubuntu/Debian
-sudo apt update
-sudo apt install docker.io docker-compose -y
-
-# CentOS
-sudo yum install docker docker-compose -y
-sudo systemctl start docker
-sudo systemctl enable docker
-```
-
-3. 克隆项目代码
 ```bash
 git clone https://github.com/AKE5297/vehicle-management-system.git
 cd vehicle-management-system
 ```
 
-4. 启动应用
+4. 安装依赖并构建
+
 ```bash
-docker-compose up -d
+npm install
+npm run build
 ```
 
-5. 配置防火墙（可选）
-```bash
-# Ubuntu/Debian
-sudo ufw allow 3001
-sudo ufw allow 27017
+5. 使用 PM2 管理进程
 
-# CentOS
-sudo firewall-cmd --permanent --add-port=3001/tcp
-sudo firewall-cmd --permanent --add-port=27017/tcp
-sudo firewall-cmd --reload
+```bash
+npm install -g pm2
+pm2 start npm --name "vehicle-management" -- run preview
 ```
 
-6. 配置域名（可选）
-   - 可以使用Nginx或Apache配置反向代理
-   - 建议配置HTTPS以提高安全性
+6. 配置反向代理（使用 Nginx）
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com;
+
+    location / {
+        proxy_pass http://localhost:4173;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+7. 重启 Nginx
+
+```bash
+sudo systemctl restart nginx
+```
+
+8. 访问系统：http://your-domain.com
 </details>
 
-### <details>
-<summary>🌐 Cloudflare Pages部署</summary>
+<details>
+<summary>GitHub Pages 部署</summary>
 
-Cloudflare Pages提供了简单的静态网站部署方式，适合部署前端应用。
+### GitHub Pages 部署
 
-### 部署步骤
+1. 确保项目已经推送到 GitHub 仓库
+2. 修改 `vite.config.ts` 文件，添加 base 路径：
 
-1. 注册或登录Cloudflare账户
+```typescript
+import { defineConfig } from 'vite'
+import react from '@vitejs/plugin-react'
 
-2. 在Cloudflare Dashboard中，选择"Pages"
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [react()],
+  base: '/vehicle-management-system/' // 替换为你的仓库名称
+})
+```
 
-3. 点击"创建项目"，选择"连接到Git"
+3. 创建 GitHub Actions 工作流文件 `.github/workflows/deploy.yml`：
 
-4. 选择您的GitHub仓库：`https://github.com/AKE5297/vehicle-management-system`
+```yaml
+name: Deploy to GitHub Pages
 
-5. 配置构建设置：
-   - 框架预设：React
-   - 构建命令：`npm run build`
-   - 构建输出目录：`dist`
-   - 环境变量：添加必要的环境变量，如：
-     - `NODE_VERSION`: `18`
-     - `NPM_VERSION`: `9`
+on:
+  push:
+    branches: [ main ]
 
-6. 点击"保存并部署"开始部署过程
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+          
+      - name: Install dependencies
+        run: npm install
+        
+      - name: Build
+        run: npm run build
+        
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+```
 
-7. 部署完成后，Cloudflare会提供一个`.pages.dev`域名，您也可以配置自定义域名
-
-### 注意事项
-
-- Cloudflare Pages只部署前端部分，后端API和数据库需要另外部署
-- 可以将后端API部署到Cloudflare Workers或其他服务器上
-- 需要在前端配置API地址以连接后端服务
+4. 提交更改并推送到 GitHub
+5. 在 GitHub 仓库设置中启用 GitHub Pages，选择 `gh-pages` 分支
+6. 等待部署完成，访问系统：https://[username].github.io/vehicle-management-system
 </details>
 
-### <details>
-<summary>⚡ Cloudflare Workers部署（前端）</summary>
+<details>
+<summary>Cloudflare Pages 部署</summary>
 
-Cloudflare Workers适合部署轻量级的前端应用和API代理。
+### Cloudflare Pages 部署
 
-### 部署步骤
+1. 登录 Cloudflare 账户
+2. 点击 "Pages"，然后点击 "Create a project"
+3. 连接 GitHub 仓库，选择 vehicle-management-system 仓库
+4. 配置构建参数：
+   - Framework preset: React
+   - Build command: npm run build
+   - Build output directory: dist
+   - Root directory: /
+5. 点击 "Save and Deploy"
+6. 部署完成后，访问系统：https://[project-name].pages.dev
 
-1. 安装Wrangler CLI
+**注意：** 使用 Cloudflare Pages 部署时，由于是纯前端应用，所有数据将存储在浏览器的本地存储中，不支持 MongoDB 功能。
+</details>
+
+<details>
+<summary>Cloudflare Workers 部署</summary>
+
+### Cloudflare Workers 部署
+
+1. 登录 Cloudflare 账户
+2. 安装 Wrangler CLI
+
 ```bash
 npm install -g wrangler
-```
-
-2. 登录Wrangler
-```bash
 wrangler login
 ```
 
-3. 在项目根目录初始化Worker
-```bash
-wrangler init
-```
+3. 在项目根目录创建 `wrangler.toml` 文件：
 
-4. 编辑`wrangler.toml`文件，配置Worker
 ```toml
-name = "vehicle-management-frontend"
-main = "worker.js"
-compatibility_date = "2023-09-01"
+name = "vehicle-management-system"
+type = "static"
+account_id = "your-account-id"
+zone_id = "your-zone-id"
+workers_dev = true
+
+[site]
+bucket = "./dist"
 ```
 
-5. 创建`worker.js`文件，添加前端服务逻辑
+4. 构建项目
 
-6. 部署Worker
 ```bash
-wrangler deploy
+npm run build
 ```
 
-7. 访问提供的Worker URL
+5. 部署到 Cloudflare Workers
+
+```bash
+wrangler publish
+```
+
+6. 访问系统：https://vehicle-management-system.[your-subdomain].workers.dev
 </details>
 
-## 📚 MongoDB使用指南
+## MongoDB 教程
 
-### <details>
-<summary>📋 数据库安装与配置</summary>
+<details>
+<summary>MongoDB 安装与配置</summary>
 
-### 本地安装MongoDB
+### MongoDB 安装与配置
 
-1. 下载并安装MongoDB Community Server
-   - [MongoDB官网下载](https://www.mongodb.com/try/download/community)
+#### 本地安装 MongoDB
 
-2. 启动MongoDB服务
-```bash
-# Windows
-net start MongoDB
+1. 访问 [MongoDB 官网下载中心](https://www.mongodb.com/try/download/community)，下载适合您操作系统的安装包
+2. 按照安装向导完成安装
+3. 启动 MongoDB 服务
 
-# macOS
-brew services start mongodb-community
-
-# Linux
-sudo systemctl start mongod
-```
-
-3. 连接MongoDB
-```bash
-mongosh
-```
-
-4. 创建数据库和用户
-```javascript
-// 连接到admin数据库
-use admin
-
-// 创建管理员用户
-db.createUser({
-  user: "admin",
-  pwd: "password",
-  roles: [{ role: "root", db: "admin" }]
-})
-
-// 创建应用数据库
-use vehicle-management
-
-// 创建应用用户
-db.createUser({
-  user: "appuser",
-  pwd: "apppassword",
-  roles: [{ role: "readWrite", db: "vehicle-management" }]
-})
-```
-
-### 使用Docker运行MongoDB
+#### Docker 方式安装 MongoDB
 
 ```bash
-docker run -d \
-  -p 27017:27017 \
-  -e MONGO_INITDB_ROOT_USERNAME=admin \
-  -e MONGO_INITDB_ROOT_PASSWORD=password \
-  -v ./mongodb-data:/data/db \
-  --name mongo \
-  mongo:latest
+docker run -d --name mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=admin -e MONGO_INITDB_ROOT_PASSWORD=password mongo
 ```
 
-### 连接MongoDB数据库
+#### 配置 MongoDB 连接
 
-使用MongoDB Compass或其他MongoDB客户端工具连接：
-- 连接URL：`mongodb://admin:password@localhost:27017/vehicle-management?authSource=admin`
-</details>
+在项目的 `.env` 文件中配置 MongoDB 连接字符串：
 
-### <details>
-<summary>🔍 数据库查询示例</summary>
-
-### 查询所有车辆
-```javascript
-// 使用MongoDB Shell
-use vehicle-management
-db.vehicles.find()
-
-// 使用Mongoose (Node.js)
-const vehicles = await Vehicle.find();
+```
+VITE_MONGODB_URI=mongodb://admin:password@localhost:27017/vehicle-management?authSource=admin
 ```
 
-### 查询特定状态的车辆
-```javascript
-// 查询在场车辆
-db.vehicles.find({ status: "in" })
+#### MongoDB 备份与恢复
 
-// 查询特定品牌的车辆
-db.vehicles.find({ brand: "奔驰" })
+备份数据库：
+
+```bash
+mongodump --uri="mongodb://admin:password@localhost:27017/vehicle-management?authSource=admin" --out=./mongo-backup
 ```
 
-### 统计车辆数据
-```javascript
-// 统计总车辆数
-db.vehicles.countDocuments()
+恢复数据库：
 
-// 按车辆类型统计
-db.vehicles.aggregate([
-  { $group: { _id: "$vehicleType", count: { $sum: 1 } } }
-])
-```
-
-### 高级查询
-```javascript
-// 查询最近30天入场的车辆
-const thirtyDaysAgo = new Date();
-thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-db.vehicles.find({
-  entryTime: { $gte: thirtyDaysAgo }
-})
+```bash
+mongorestore --uri="mongodb://admin:password@localhost:27017/vehicle-management?authSource=admin" ./mongo-backup
 ```
 </details>
 
-### <details>
-<summary>💾 数据备份与恢复</summary>
+## 界面截图
 
-### 使用mongodump备份数据
-```bash
-# 备份所有数据库
-mongodump --uri="mongodb://admin:password@localhost:27017" --out=/backup
+<!-- 预留界面截图位置，后期会添加 -->
 
-# 只备份vehicle-management数据库
-mongodump --uri="mongodb://admin:password@localhost:27017/vehicle-management" --out=/backup
-```
+## 使用说明
 
-### 使用mongorestore恢复数据
-```bash
-# 恢复所有数据库
-mongorestore --uri="mongodb://admin:password@localhost:27017" /backup
+### 登录系统
 
-# 只恢复vehicle-management数据库
-mongorestore --uri="mongodb://admin:password@localhost:27017" --db=vehicle-management /backup/vehicle-management
-```
+系统默认提供两个用户账户：
 
-### 定时备份脚本
-```bash
-#!/bin/bash
-BACKUP_DIR="/backup/mongodb"
-DATE=$(date +%Y%m%d%H%M%S)
-mkdir -p $BACKUP_DIR
+- 管理员账户：
+  - 用户名：admin
+  - 密码：admin123
+- 普通用户账户：
+  - 用户名：user1
+  - 密码：user123
 
-mongodump --uri="mongodb://admin:password@localhost:27017/vehicle-management" --out=$BACKUP_DIR/$DATE
+### 主要功能模块
 
-# 保留最近7天的备份
-find $BACKUP_DIR -type d -mtime +7 -exec rm -rf {} \;
-```
-</details>
+1. **车辆管理**：添加、编辑、删除和查看车辆信息
+2. **维修管理**：记录和管理车辆维修保养记录
+3. **发票管理**：生成和管理服务发票
+4. **数据管理**：备份、恢复和导出系统数据
+5. **系统设置**：用户管理、系统配置等
 
-## 🚗 使用指南
+## 支付方式
 
-### <details>
-<summary>🔐 登录系统</summary>
+<div style="display: flex; justify-content: center; gap: 20px; margin: 20px 0;">
+  <div style="text-align: center;">
+    <h3>微信支付</h3>
+    <img src="https://github.com/user-attachments/assets/1d3bae2a-4f7b-437b-9e79-d3fdfb80af75" alt="微信支付" style="width: 200px; height: 200px;">
+  </div>
+  <div style="text-align: center;">
+    <h3>支付宝</h3>
+    <img src="https://github.com/user-attachments/assets/ce03a5fe-d2f5-4ff4-b8eb-e611aab43f95" alt="支付宝" style="width: 200px; height: 200px;">
+  </div>
+</div>
 
-系统初始提供一个管理员账户：
-- 用户名：`admin`
-- 密码：`admin123`
+## 常见问题
 
-首次登录后，请及时修改密码以保证账户安全。
-</details>
+1. **端口占用问题**：
+   - 如果启动时提示端口被占用，可以修改 docker-compose.yml 文件中的端口映射，例如将 3001:3000 改为 3002:3000
+   - 或者停止占用端口的其他应用程序
 
-### <details>
-<summary>📝 添加车辆</summary>
+2. **数据同步问题**：
+   - 系统会自动在本地存储数据，确保即使离线也能使用
+   - 如果需要同步到 MongoDB，可以配置正确的连接字符串
 
-1. 登录系统后，点击左侧菜单的"车辆管理"
-2. 点击"添加车辆"按钮
-3. 填写车辆信息，包括车牌号、品牌、型号等
-4. 上传车辆照片（可选）
-5. 点击"保存"按钮完成添加
-</details>
+3. **备份恢复问题**：
+   - 系统支持自动备份和手动备份功能
+   - 备份文件存储在浏览器的本地存储中，可以导出保存
 
-### <details>
-<summary>🔧 创建维修记录</summary>
+## 支持项目
 
-1. 从左侧菜单进入"维修记录"页面
-2. 点击"创建维修单"按钮
-3. 选择车辆并填写维修信息
-4. 添加维修配件和工时费
-5. 上传维修照片（可选）
-6. 保存维修记录
-</details>
+如果您觉得这个项目对您有帮助，请考虑支持我们的开发工作。您的支持将帮助我们持续改进和维护这个项目。
 
-### <details>
-<summary>📊 查看数据统计</summary>
-
-1. 登录系统后，默认进入仪表盘页面
-2. 查看各项统计数据，包括总车辆数、在场车辆数等
-3. 查看月度服务统计图表
-4. 查看最近添加的车辆信息
-</details>
-
-## 🛠️ 开发指南
-
-### <details>
-<summary>👨‍💻 项目结构</summary>
-
-```
-vehicle-management-system/
-├── src/                # 源代码目录
-│   ├── components/      # 可复用组件
-│   ├── contexts/        # React上下文
-│   ├── hooks/           # 自定义Hooks
-│   ├── pages/           # 页面组件
-│   ├── services/        # 服务层
-│   ├── types/           # TypeScript类型定义
-│   ├── App.tsx          # 应用入口组件
-│   └── main.tsx         # 渲染入口
-├── public/              # 静态资源
-├── server.js            # 后端服务器
-├── package.json         # 项目依赖
-└── docker-compose.yml   # Docker Compose配置
-```
-</details>
-
-### <details>
-<summary>📦 安装与开发</summary>
-
-1. 克隆仓库
-```bash
-git clone https://github.com/AKE5297/vehicle-management-system.git
-cd vehicle-management-system
-```
-
-2. 安装依赖
-```bash
-pnpm install
-```
-
-3. 启动开发服务器
-```bash
-pnpm dev
-```
-
-4. 构建生产版本
-```bash
-pnpm build
-```
-
-5. 预览生产版本
-```bash
-pnpm preview
-```
-</details>
-
-### <details>
-<summary>🧪 测试</summary>
-
-```bash
-# 运行单元测试
-pnpm test
-
-# 运行测试覆盖率
-pnpm test:coverage
-```
-</details>
-
-## 🤝 贡献指南
-
-我们欢迎社区贡献！如果你有任何想法或发现了问题，请：
-
-1. Fork 这个仓库
-2. 创建你的特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交你的更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开一个 Pull Request
-
-## 📄 许可证
+## 许可证
 
 本项目采用 MIT 许可证 - 详见 [LICENSE](LICENSE) 文件
 
-## 📞 联系我们
+## 版权信息
 
-如有任何问题或建议，请随时联系我们。
+© 2025 车辆管理系统 - 版权所有

@@ -587,7 +587,15 @@ app.get('/api/export/:format', authMiddleware, async (req, res) => {
   }
 });
 
-// 服务器启动
+// 静态文件服务 - 在API路由之后添加，确保API路由优先匹配
+// 提供前端构建后的静态文件
+app.use(express.static(path.join(__dirname, 'dist/static')));
+
+// 处理SPA应用的路由问题，确保所有路由都指向index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist/static/index.html'));
+});
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`服务器运行在端口 ${PORT}`);
