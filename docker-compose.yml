@@ -6,25 +6,25 @@ services:
     container_name: vehicle-management-app
     working_dir: /app
     ports:
-      - "3001:3000"  # 更换为未被占用的端口
-      - "5001:5000"  # 更换为未被占用的端口
+      - "3000:3000"
+      - "5000:5000"
     volumes:
       - ./:/app
       - ./uploads:/app/uploads
     environment:
-      - MONGODB_URI=mongodb://admin:password@db:27017/vehicle-management?authSource=admin
+       - MONGODB_URI=mongodb://admin:password@db:27017/vehicle-management?authSource=admin
       - JWT_SECRET=your-secret-key
       - UPLOAD_DIR=/app/uploads
       - PORT=5000
     depends_on:
       - db
-    command: sh -c "npm install -g pnpm && pnpm install && pnpm build && pnpm start"
+    command: sh -c "git clone https://github.com/AKE5297/vehicle-management-system.git /app && cd /app && npm install -g pnpm && pnpm install && pnpm build && pnpm start"
     
-  db:
-    image: mongo:latest
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=password
+   db:
+     image: mongo:latest
+     environment:
+       - MONGO_INITDB_ROOT_USERNAME=admin
+       - MONGO_INITDB_ROOT_PASSWORD=password
     container_name: vehicle-management-db
     volumes:
       - ./mongodb-data:/data/db
